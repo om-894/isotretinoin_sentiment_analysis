@@ -6,7 +6,7 @@ library(tidytext)
 
 
 # Read vr_treatment data
-vr_treatment <- read_csv("data-raw/accutane_abstracts.csv")
+vr_treatment <- read_csv("data-raw/isotretinoin_abstracts.csv")
 
 
 # Find out some basic information about the data
@@ -83,7 +83,7 @@ vr_treatment  <- vr_treatment |>
 
 # write the data to a csv file so we can read that in rather than
 # adding such a column each time
-write_csv(vr_treatment, "data-raw/accutane_abstracts_supp.csv")
+write_csv(vr_treatment, "data-raw/isotretinoin_abstracts_supp.csv")
 
 # number of articles with and without abstracts
 vr_treatment |>
