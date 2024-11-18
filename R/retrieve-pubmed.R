@@ -1,15 +1,16 @@
-# load packages -----------------------------------------------------------
 
+# load packages -----------------------------------------------------------
 
 library(easyPubMed)
 library(tidyverse)
 
-
-
-
 # define search terms -----------------------------------------------------
 # query from https://pubmed.ncbi.nlm.nih.gov/advanced/
-query1 <- '("Accutane" OR "Isotretinoin")'
+query1 <- '("Isotretinoin"[Mesh] OR Isotretinoin OR Accutane OR Roaccutane)'
+
+# when comparing across treatments (include as well as across countries)
+# query2 <- '(Tretinoin OR Adapalene OR "Retinoids"[Mesh])'
+
 
 # get pubmed ids ----------------------------------------------------------
 entrez_id <- get_pubmed_ids(query1)
@@ -46,6 +47,6 @@ full_df <- full_df |>
   select(-keywords, -lastname, -firstname, -address, -email)
 
 # write the data to a csv file -------------------------------------------
-write_csv(full_df, "data-raw/accutane_abstracts.csv")
+write_csv(full_df, "data-raw/isotretinoin_abstracts.csv")
 # when you are working on your project, import the data from the file
 # rather than downloading again.
