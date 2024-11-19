@@ -287,11 +287,17 @@ abstract_sentences <- abstracts_data %>%
   unnest(sentences) %>%                                  # Expand sentences into individual rows
   mutate(sentences = str_trim(sentences))                # Remove extra whitespace
 
+
 abstract_sentences <- abstract_sentences %>%
   filter(sentences != "")
 
 # print a sample sentence
-print(head(abstract_sentences$sentences))
+print(head(abstract_sentences$sentences, 1))
+
+
+
+
+
 
 
 
