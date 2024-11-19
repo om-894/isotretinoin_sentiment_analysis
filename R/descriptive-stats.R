@@ -11,7 +11,7 @@ vr_treatment <- read_csv("data-raw/isotretinoin_abstracts.csv")
 
 # Find out some basic information about the data
 glimpse(vr_treatment)
-# Rows: 4,997 the number of articles
+# Rows: 4,987 (number of articles)
 # Columns: 9
 # pmid
 # doi
@@ -28,11 +28,9 @@ glimpse(vr_treatment)
 vr_treatment |>
   group_by(year) |>
   summarise(n = n())
-# there are articles from 1986 to 2024. this is a recent field
-# the number of articles per year is increasing - but that is true
-# for publications in general. it would be good to know the number
-# of articles published in general to see if the increase is
-# proportionate
+# there are articles from 1986 to 2024.
+# the number of articles per year is not constant, 86 articles in 1987 adds supporting
+# evidence of a longitudinal study
 
 # figure of the same
 vr_treatment |>
@@ -47,6 +45,19 @@ vr_treatment |>
   summarise(n = n()) |>
   ggplot(aes(x = factor(year), y = n)) +
   geom_col()
+
+# shorten year labels e.g '87 for 1987
+vr_treatment |>
+  group_by(year) |>
+  summarise(n = n()) |>
+  ggplot(aes(x = factor(year), y = n)) +
+  geom_col() +
+  scale_x_discrete(labels = function(x) str_sub(x, 3, 4))
+
+# Figure 1. Number of articles per year for isotretinoin
+
+# save figure to file
+ggsave("figures/number_of_articles_per_year.png")
 
 # how many journals are represented in the data?
 vr_treatment |>
@@ -69,6 +80,11 @@ vr_treatment |>
   ggplot(aes(x = reorder(jabbrv, n), y = n)) +
   geom_col() +
   coord_flip()
+
+# Figure 2. Number of articles per journal for isotretinoin
+
+# save figure to file
+ggsave("figures/number_of_articles_per_journal.png")
 
 
 # how many articles do not have abstracts?
@@ -98,8 +114,24 @@ vr_treatment |>
   ggplot(aes(x = factor(year), y = n, fill = factor(has_abstract))) +
   geom_col()
 
+# shorten year label
+vr_treatment |>
+  group_by(year, has_abstract) |>
+  summarise(n = n()) |>
+  ggplot(aes(x = factor(year), y = n, fill = factor(has_abstract))) +
+  geom_col() +
+  scale_x_discrete(labels = function(x) str_sub(x, 3, 4))
+
+# Figure 3. Number of articles with and without abstracts per year for isotretinoin
+
 # the number of articles without abstracts is relatively small
 # and they are distributed roughly as your would expect over years
+
+# save figure to file
+ggsave("figures/number_of_articles_with_and_without_abstracts_per_year.png")
+
+
+
 
 
 
