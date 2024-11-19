@@ -83,4 +83,53 @@ print(head(fear_words, 10))
 # - The dataset primarily addresses topics such as disease risk, adverse outcomes, 
 # and medical conditions, reflecting a strong focus on healthcare and research.
 
+#### Bing lexicon sentiment analysis ####
+# Assign sentiment to words using the Bing lexicon
+sentiment_bing <- tidy_abstracts %>%
+  inner_join(bing, by = "word")
+
+# Count positive and negative words for each abstract
+abstracts_sentiment <- sentiment_bing %>%
+  group_by(pmid) %>%                  # Group by each abstract (identified by pmid)
+  count(sentiment) %>%                # Count positive and negative words
+  spread(sentiment, n, fill = 0) %>%  # Convert to wide format
+  mutate(sentiment = positive - negative)  # Calculate net sentiment
+
+# View sentiment scores for each abstract
+print(head(abstracts_sentiment))
+
+# Filter the PMIDs with the most negative sentiments in decending order
+most_negative <- abstracts_sentiment %>%
+  arrange(sentiment) %>%  # Sort by sentiment
+  select(pmid, sentiment)  # Select the PMID and sentiment
+
+# Filter and plot the top 10 most negative sentiment scores in descending order
+most_negative %>%
+  head(10) %>%  # Take the 10 most negative abstracts
+  ggplot(aes(x = reorder(as.factor(pmid), -sentiment), y = sentiment)) +
+  geom_col(fill = "indianred3", color = "indianred3") +  # Red bars with black outlines
+  coord_flip() +  # Flip coordinates for better readability
+  labs(title = "Top 10 Most Negative Sentiments in Abstracts",
+       x = "PMID",
+       y = "Net Sentiment Score") +
+  theme_minimal()
+
+# save the plot
+ggsave("figures/top_10_most_negative_sentiments.png")
+
+# Filter the PMIDs with the most positive sentiments in decending order
+most_positive <- abstracts_sentiment %>%
+  arrange(desc(sentiment)) %>%  # Sort by sentiment in descending order
+  select(pmid, sentiment)  # Select the PMID and sentiment
+
+# Filter and plot the top 10 most positive sentiment scores in ascending order
+most_positive %>%
+  head(10) %>%  # Take the 10 most positive abstracts
+  ggplot(aes(x = reorder(as.factor(pmid), sentiment), y = sentiment)) +
+  geom_col(fill = "lightblue", color = "lightblue") +  # Green bars with green outlines
+  coord_flip() +  # Flip coordinates for better readability
+  labs(title = "Top 10 Most Positive Sentiments in Abstracts",
+       x = "PMID",
+       y = "Net Sentiment Score") +
+  theme_minimal()
 
