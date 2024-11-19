@@ -292,7 +292,18 @@ abstract_sentences <- abstract_sentences %>%
   filter(sentences != "")
 
 # print a sample sentence
-print(head(abstract_sentences$sentences, 1))
+print(head(abstract_sentences))
+
+# We want tot keep the sentences column, so we use drop = FALSE
+# unnest_tokens() will create a new column with the tokenized words but will 
+# now the original sentences column. Normally it would drop it.
+
+# Tokenize the sentences into words, keeping the sentences column
+tidy_sentences <- abstract_sentences %>%
+  unnest_tokens(word, sentences, drop = FALSE)
+
+# View the tokenized data
+print(head(tidy_sentences))
 
 
 
