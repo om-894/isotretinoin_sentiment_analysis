@@ -3,18 +3,18 @@ library(RedditExtractoR)
 library(tidyverse)
 
 # find subreddits based on a search query
-vacc_subreddits <- find_subreddits("vaccines")
+vacc_subreddits <- find_subreddits("isotretinoin")
 
-# 19-11-2024 gave 189 subreddits
-write_csv(vacc_subreddits, "data-raw/vacc_subreddits.csv")
+# 24-11-2024 gave 33 subreddits
+write_csv(vacc_subreddits, "data-raw/isotret_subreddits.csv")
 
-# find URLs to threads of interest in a subreddit
-top_urls <- find_thread_urls(subreddit = "askscience",
+# find URLs to threads of interest in subrettit named 'accutane'.
+top_urls <- find_thread_urls(subreddit = "accutane",
                              sort_by = "top",
                              period = "all",
-                             keywords = "vaccine")
+                             keywords = "isotretinoin")
 
-# 19-11-2024 gave 232 url
+# 24-11-2024 gave 233 url
 
 
 # get the unique thread id from the url and
@@ -26,7 +26,7 @@ top_urls <- top_urls |>
 
 top_urls <- top_urls  |>
   mutate(text2 = paste(title, text))
-write_csv(top_urls, "data-raw/ask_sci_vaccine_urls.csv")
+write_csv(top_urls, "data-raw/accutane_isotret_urls.csv")
 # to anaylze that text in R you can use the text2 column from
 # this file
 
@@ -35,11 +35,12 @@ write_csv(top_urls, "data-raw/ask_sci_vaccine_urls.csv")
 # text/title for each original post in a text file
 # this will write the each value of the text2 column to a file
 # named with the corresponding thread_id
-walk2(top_urls$text2,
-      top_urls$thread_id,
-      ~ writeLines(.x, paste0(.y, ".txt")))
+# walk2(top_urls$text2,
+#       top_urls$thread_id,
+#       ~ writeLines(.x, paste0(.y, ".txt")))
 
-# Getting all the comments from a thread
+
+#### Getting all the comments from a thread ####
 
 # use URLs to threads of interest to retrieve comments out of these threads
 # I've done only to the first four threads for speed.
@@ -47,30 +48,26 @@ walk2(top_urls$text2,
 # See later
 
 threads_contents <- get_thread_content(top_urls$url[1:4])
-# The 4 threads: j6nu5w, jsaivo, maks8z, ka9bwc
-#  these should have: 20, 63, 187, 89 comments respectively (total is 278)
 # threads_contents is a list with 2 elements
 # 1. threads_contents[["threads"]] - a data frame with with info
 #     about the original post
 # 2. threads_contents[["comments"]] - a data frame the comment
 
 # write the data frame comments to  file
-write_csv(threads_contents$comments, "data-raw/ask_sci_vaccine_comments.csv")
+write_csv(threads_contents$comments, "data-raw/accutane_isotret_comments.csv")
 
 threads_contents$comments |>
   group_by(url) |>
   count()
-# 1 https://www.reddit.com/r/askscience/comments/j6nu5w/are_vaccine_platforms_reusable/                       13
-# 2 https://www.reddit.com/r/askscience/comments/jsaivo/what_is_the_efficacy_of_normal_vaccines/              42
-# 3 https://www.reddit.com/r/askscience/comments/ka9bwc/a_vaccine_is_94_effective_what_exactly_does_that/     61
-# 4 https://www.reddit.com/r/askscience/comments/maks8z/askscience_ama_series_we_are_drs_emily_landon_and/   163
+# url                                                                                          n
+# <chr>                                                                                      <int>
+# 1 https://www.reddit.com/r/Accutane/comments/10qid7c/last_dose_tomorrow_any_advice_for_…     4
+# 2 https://www.reddit.com/r/Accutane/comments/1cgpewr/starting_my_journey_today_im_a_bit…    13
+# 3 https://www.reddit.com/r/Accutane/comments/p6oe3s/finally_back_on_accutane_next_week_…    28
+# 4 https://www.reddit.com/r/Accutane/comments/z2athc/starting_isotretinoin_20mg_and_pred…    14
 
 threads_contents$threads |>
   select(url, comments)
-# 1                    https://www.reddit.com/r/askscience/comments/j6nu5w/are_vaccine_platforms_reusable/       20
-# 2           https://www.reddit.com/r/askscience/comments/jsaivo/what_is_the_efficacy_of_normal_vaccines/       63
-# 3 https://www.reddit.com/r/askscience/comments/maks8z/askscience_ama_series_we_are_drs_emily_landon_and/      187
-# 4  https://www.reddit.com/r/askscience/comments/ka9bwc/a_vaccine_is_94_effective_what_exactly_does_that/       89
 
 # why aren't these the same.
 
@@ -79,3 +76,11 @@ threads_contents$threads |>
 # The same is true for the other threads. The number of comments is less than
 # printed number. Perhaps that total includes deleted comments or edits.
 # Any way upshot is that the number of comments in the data frame is correct.
+
+
+#### combining dataframes ####
+
+
+
+
+
