@@ -13,7 +13,7 @@ top_urls <- find_thread_urls(subreddit = "accutane",
                              period = "all",
                              keywords = "isotretinoin")
 
-# Extract the unique thread id from the url and add it as a column
+# Extract the unique thread id from the URL and combine title and text
 top_urls <- top_urls %>%
   mutate(thread_id = str_extract(url, "(?<=comments/)[^/]+"),
          text2 = paste(title, text))
@@ -23,17 +23,14 @@ write_csv(top_urls, "data-raw/accutane_isotret_urls.csv")
 get_comments_for_thread <- function(url) {
   message("Retrieving comments for: ", url)
   tryCatch({
-    # Retrieve thread content, which returns a list with two data frames:
-    # 1. threads – information about the original post
-    # 2. comments – the comments on that post
     thread_content <- get_thread_content(url)
     
-    # Extract details from the original post for reference
+    # Extract thread details from the original post if available
     if(nrow(thread_content$threads) > 0) {
       thread_title <- thread_content$threads$title[1]
-      thread_text <- thread_content$threads$text[1]
-      thread_url  <- thread_content$threads$url[1]
-      thread_id   <- str_extract(thread_url, "(?<=comments/)[^/]+")
+      thread_text  <- thread_content$threads$text[1]
+      thread_url   <- thread_content$threads$url[1]
+      thread_id    <- str_extract(thread_url, "(?<=comments/)[^/]+")
     } else {
       thread_title <- NA
       thread_text  <- NA
@@ -41,16 +38,16 @@ get_comments_for_thread <- function(url) {
       thread_id    <- NA
     }
     
-    # If there are comments, append the thread details to each comment
+    # Retrieve and modify the comments data frame
     if(nrow(thread_content$comments) > 0) {
       thread_comments <- thread_content$comments %>%
         mutate(thread_title = thread_title,
-               thread_text = thread_text,
-               thread_url  = thread_url,
-               thread_id   = thread_id)
+               thread_text  = thread_text,
+               thread_url   = thread_url,
+               thread_id    = thread_id,
+               comment_id   = as.character(comment_id))  # Coerce comment_id to character
       return(thread_comments)
     } else {
-      # Return an empty tibble if no comments were found
       return(tibble())
     }
   }, error = function(e) {
@@ -59,8 +56,7 @@ get_comments_for_thread <- function(url) {
   })
 }
 
-# Retrieve comments for each thread in top_urls
-# NB: Depending on the number of threads, you may wish to process these in batches.
+# Retrieve comments for each thread in top_urls and combine them into one data frame
 all_comments <- map_dfr(top_urls$url, get_comments_for_thread)
 
 # Write the combined comments data frame to a CSV file
@@ -72,3 +68,4 @@ all_comments %>%
   summarise(n_comments = n()) %>%
   arrange(desc(n_comments)) %>%
   print()
+
