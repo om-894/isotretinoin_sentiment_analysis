@@ -75,3 +75,10 @@ if __name__ == '__main__':
         print("Invalid number entered. Defaulting to 5 posts.")
         post_limit = 5
     get_posts_and_comments(subreddit_name, post_limit)
+
+
+## TO DO
+# 1. Add error handling for invalid subreddit names.
+# 2. Add a function to retrieve the most popular subreddits based on the number of subscribers.
+# 3. Create a function to prepare text for tokenization and analysis (e.g., remove URLs, emojis, etc.).
+# 4. Add a function to save the retrieved data to a file for further analysis.
