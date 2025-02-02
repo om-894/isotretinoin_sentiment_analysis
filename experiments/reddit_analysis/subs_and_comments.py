@@ -25,6 +25,21 @@ reddit = praw.Reddit(
     user_agent='script:SubAndCommentRetriever:v1.0 (by /u/omquillan)'
 )
 
+###############################################################
+###             Find most popular subreddits                ###
+###############################################################
+
+
+def get_most_popular_subreddits(limit=5):
+    """
+    Retrieves the most popular subreddits based on the number of subscribers.
+
+    :param limit: The number of subreddits to retrieve
+    """
+    for subreddit in reddit.subreddits.popular(limit=limit):
+        print(subreddit.display_name)
+
+
 def get_posts_and_comments(subreddit_name, limit=5):
     """
     Retrieves posts and their comments from a given subreddit.
