@@ -1,6 +1,7 @@
 
 #!/usr/bin/env python3
 import praw
+import re
 
 # This script retrieves posts and their comments from a specified subreddit.
 # Please ensure you have installed PRAW (run: pip install praw)
@@ -13,11 +14,15 @@ import praw
 # 3. Choose "script" as the app type
 # 4. Fill in the details (name = SubAndCommentRetriever, description = "Script to retrieve posts and comments from a subreddit", about url = http://localhost, redirect uri = http://localhost)
 
+# client ID: -L_dO7FFuSozIciBJYoolQ
+# secret: oPGUzVjHqPAZHr1DD4Y-xDk_5Kse4w
+
+
 # Replace the placeholders below with your own Reddit API credentials.
 reddit = praw.Reddit(
-    client_id='YOUR_CLIENT_ID',
-    client_secret='YOUR_CLIENT_SECRET',
-    user_agent='script:reddit_post_comment_retriever:v1.0 (by /u/YOUR_USERNAME)'
+    client_id='-L_dO7FFuSozIciBJYoolQ',
+    client_secret='oPGUzVjHqPAZHr1DD4Y-xDk_5Kse4w',
+    user_agent='script:SubAndCommentRetriever:v1.0 (by /u/omquillan)'
 )
 
 def get_posts_and_comments(subreddit_name, limit=5):
@@ -38,12 +43,13 @@ def get_posts_and_comments(subreddit_name, limit=5):
         
         # Ensure all comments are loaded (removes the 'more comments' placeholders)
         submission.comments.replace_more(limit=0)
-        
-        # Iterate over a flat list of all comments in the submission
+
+        # Print the comments
         for comment in submission.comments.list():
-            # Some comments might be deleted or removed
-            if comment.body:
-                print("  - ", comment.body)
+            # Use regex to check for 'bot' as a whole word in a case-insensitive way.
+            if comment.body and re.search(r'\bbot\b', comment.body, re.IGNORECASE):
+                continue
+            print("  -", comment.body)
         print("=" * 80)
 
 if __name__ == '__main__':
