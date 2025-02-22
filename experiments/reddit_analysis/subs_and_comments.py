@@ -114,10 +114,14 @@ if __name__ == '__main__':
     write_to_csv(posts_and_comments, f'{subreddit_name}_reddit_posts.csv')
 
 ## TO DO
-# put the data to be in .csv format. I need to have a post_title column, post_body column, comment column (where all comments are combined into one paragraph)
-# Need to remove commas from the posts and comments. Also need to remove newlines and other spaces such as dashes, etc.
-# Was thinking about potentially ignoring posts that dont fully relate to acutane (or whatever subreddit i am using) but this is hard to do
-# Also this could be a good experiemtn to see if comment and post sentiment is similar or different. 
+# 1. put the data to be in .csv format. I need to have a post_title column, post_body column, comment column (where all comments are combined into one paragraph)
+# 2. Need to remove commas from the posts and comments. Also need to remove newlines and other spaces such as dashes, etc.
+# 3. Was thinking about potentially ignoring posts that dont fully relate to acutane (or whatever subreddit i am using) but this is hard to do
+#    Also this could be a good experiemtn to see if comment and post sentiment is similar or different.
+# 4. Add column in csv file that has the subreddit name
+# 5. Write a loop to get all of the posts from all of the subreddits that i need. 
 
-# Tokenization is the process of breaking text into individual words or tokens. This is a crucial step in natural 
-# language processing (NLP) tasks such as sentiment analysis, text classification, and language modeling.
+def check_subreddit(subreddit_name):
+    subreddit = reddit.subreddit(subreddit_name)
+    pattern = fr'\b{subreddit_name}\b'
+    return bool(re.search(pattern, subreddit.selftext, re.IGNORECASE))
