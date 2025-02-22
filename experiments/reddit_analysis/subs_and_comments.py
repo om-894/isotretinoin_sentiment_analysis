@@ -40,10 +40,23 @@ def get_most_popular_subreddits(limit=5):
     for subreddit in reddit.subreddits.popular(limit=limit):
         print(subreddit.display_name)
 
+def clean_text(text):
+    """
+    Cleans the text by removing commas, newlines, dashes, and extra spaces.
+
+    :param text: The text to clean
+    :return: The cleaned text
+    """
+    text = text.replace(',', ' ')
+    text = text.replace('\n', ' ')
+    text = text.replace('-', ' ')
+    text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with a single space
+    return text.strip()
+
 def clean_submission(submission):
     post_data = {
-        "title": submission.title,
-        "body": submission.selftext,
+        "title": clean_text(submission.title),
+        "body": clean_text(submission.selftext),
         "comments": []
     }
     
@@ -54,7 +67,7 @@ def clean_submission(submission):
     for comment in submission.comments.list():
         # Use regex to check for 'bot' as a whole word in a case-insensitive way.
         if comment.body and not re.search(r'\bbot\b', comment.body, re.IGNORECASE):
-            post_data["comments"].append(comment.body)
+            post_data["comments"].append(clean_text(comment.body))
     
     return post_data
 
