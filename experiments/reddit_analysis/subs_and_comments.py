@@ -43,6 +43,7 @@ def get_most_popular_subreddits(limit=5):
 def get_posts_and_comments(subreddit_name, limit=5):
     """
     Retrieves posts and their comments from a given subreddit.
+    The output should then be used in the clean_submission function.
 
     :param subreddit_name: The name of the subreddit
     :param limit: The number of posts to retrieve
@@ -57,9 +58,7 @@ def get_posts_and_comments(subreddit_name, limit=5):
     return "\n\n".join(posts_and_comments)
 
 def clean_submission(submission):
-    post_data = f"Title: {submission.title}\n"
-    post_data += f"Score: {submission.score}\n"
-    post_data += f"URL: {submission.url}\n"
+    post_data = f"Title: {submission.title}\n" 
     post_data += f"Self text: {submission.selftext}\n"
     post_data += "Comments:\n"
     
@@ -109,4 +108,6 @@ if __name__ == '__main__':
     except ValueError:
         print("Invalid number entered. Defaulting to 5 posts.")
         post_limit = 5
-    get_posts_and_comments(subreddit_name, post_limit)
+    
+    posts_and_comments = get_posts_and_comments(subreddit_name, post_limit)
+    print(posts_and_comments)
