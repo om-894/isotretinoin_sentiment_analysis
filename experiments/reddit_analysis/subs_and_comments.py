@@ -2,6 +2,7 @@
 #!/usr/bin/env python3
 import praw
 import re
+import csv
 
 # This script retrieves posts and their comments from a specified subreddit.
 # Please ensure you have installed PRAW (run: pip install praw)
@@ -39,11 +40,27 @@ def get_most_popular_subreddits(limit=5):
     for subreddit in reddit.subreddits.popular(limit=limit):
         print(subreddit.display_name)
 
+def clean_submission(submission):
+    post_data = {
+        "title": submission.title,
+        "body": submission.selftext,
+        "comments": []
+    }
+    
+    # Ensure all comments are loaded (removes the 'more comments' placeholders)
+    submission.comments.replace_more(limit=0)
+
+    # Collect the comments
+    for comment in submission.comments.list():
+        # Use regex to check for 'bot' as a whole word in a case-insensitive way.
+        if comment.body and not re.search(r'\bbot\b', comment.body, re.IGNORECASE):
+            post_data["comments"].append(comment.body)
+    
+    return post_data
 
 def get_posts_and_comments(subreddit_name, limit=5):
     """
     Retrieves posts and their comments from a given subreddit.
-    The output should then be used in the clean_submission function.
 
     :param subreddit_name: The name of the subreddit
     :param limit: The number of posts to retrieve
@@ -55,51 +72,22 @@ def get_posts_and_comments(subreddit_name, limit=5):
         cleaned_data = clean_submission(submission)
         posts_and_comments.append(cleaned_data)
     
-    return "\n\n".join(posts_and_comments)
+    return posts_and_comments
 
-def clean_submission(submission):
-    post_data = f"Title: {submission.title}\n" 
-    post_data += f"Self text: {submission.selftext}\n"
-    post_data += "Comments:\n"
     
-    # Ensure all comments are loaded (removes the 'more comments' placeholders)
-    submission.comments.replace_more(limit=0)
-
-    # Collect the comments
-    comments = []
-    for comment in submission.comments.list():
-        # Use regex to check for 'bot' as a whole word in a case-insensitive way.
-        if comment.body and not re.search(r'\bbot\b', comment.body, re.IGNORECASE):
-            comments.append(comment.body)
-    
-    post_data += "\n".join(comments)
-    return post_data
-
-
-## TO DO
-# 1. Add error handling for invalid subreddit names.
-# 2. Add a function to retrieve the most popular subreddits based on the number of subscribers.
-# 3. Create a function to prepare text for tokenization and analysis (e.g., remove URLs, emojis, etc.).
-# 4. Add a function to save the retrieved data to a file for further analysis.
-
-### Tokenising
-
-# Tokenization is the process of breaking text into individual words or tokens. This is a crucial step in natural 
-# language processing (NLP) tasks such as sentiment analysis, text classification, and language modeling.
-
-
-def tokenize_text(text):
+def write_to_csv(data, filename='reddit_posts.csv'):
     """
-    Tokenize text by splitting it into individual words.
+    Writes the data to a CSV file.
 
-    :param text: The text to be tokenized
-    :return: A list of tokens
+    :param data: The data to write to the CSV file
+    :param filename: The name of the CSV file
     """
-    tokenized = []
-    for word in text.split():
-        tokenized.append(word)
-    return tokenized
-
+    with open(filename, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(["post_title", "post_body", "comments"])
+        
+        for post in data:
+            writer.writerow([post["title"], post["body"], " ".join(post["comments"])])
 
 if __name__ == '__main__':
     subreddit_name = input("Enter the subreddit name (without /r/): ")
@@ -108,6 +96,14 @@ if __name__ == '__main__':
     except ValueError:
         print("Invalid number entered. Defaulting to 5 posts.")
         post_limit = 5
-    
+
     posts_and_comments = get_posts_and_comments(subreddit_name, post_limit)
-    print(posts_and_comments)
+    write_to_csv(posts_and_comments, f'{subreddit_name}_reddit_posts.csv')
+
+## TO DO
+# put the data to be in .csv format. I need to have a post_title column, post_body column, comment column (where all comments are combined into one paragraph)
+
+# Need to remove commas from the posts and comments. Also need to remove newlines and other spaces such as dashes, etc.
+
+# Tokenization is the process of breaking text into individual words or tokens. This is a crucial step in natural 
+# language processing (NLP) tasks such as sentiment analysis, text classification, and language modeling.
