@@ -48,24 +48,59 @@ def get_posts_and_comments(subreddit_name, limit=5):
     :param limit: The number of posts to retrieve
     """
     subreddit = reddit.subreddit(subreddit_name)
-    
-    for submission in subreddit.hot(limit=limit):
-        print("Title: ", submission.title)
-        print("Score: ", submission.score)
-        print("URL: ", submission.url)
-        print("Self text: ", submission.selftext)
-        print("Comments:")
-        
-        # Ensure all comments are loaded (removes the 'more comments' placeholders)
-        submission.comments.replace_more(limit=0)
+    posts_and_comments = []
 
-        # Print the comments
-        for comment in submission.comments.list():
-            # Use regex to check for 'bot' as a whole word in a case-insensitive way.
-            if comment.body and re.search(r'\bbot\b', comment.body, re.IGNORECASE):
-                continue
-            print("  -", comment.body)
-        print("=" * 80)
+    for submission in subreddit.hot(limit=limit):
+        cleaned_data = clean_submission(submission)
+        posts_and_comments.append(cleaned_data)
+    
+    return "\n\n".join(posts_and_comments)
+
+def clean_submission(submission):
+    post_data = f"Title: {submission.title}\n"
+    post_data += f"Score: {submission.score}\n"
+    post_data += f"URL: {submission.url}\n"
+    post_data += f"Self text: {submission.selftext}\n"
+    post_data += "Comments:\n"
+    
+    # Ensure all comments are loaded (removes the 'more comments' placeholders)
+    submission.comments.replace_more(limit=0)
+
+    # Collect the comments
+    comments = []
+    for comment in submission.comments.list():
+        # Use regex to check for 'bot' as a whole word in a case-insensitive way.
+        if comment.body and not re.search(r'\bbot\b', comment.body, re.IGNORECASE):
+            comments.append(comment.body)
+    
+    post_data += "\n".join(comments)
+    return post_data
+
+
+## TO DO
+# 1. Add error handling for invalid subreddit names.
+# 2. Add a function to retrieve the most popular subreddits based on the number of subscribers.
+# 3. Create a function to prepare text for tokenization and analysis (e.g., remove URLs, emojis, etc.).
+# 4. Add a function to save the retrieved data to a file for further analysis.
+
+### Tokenising
+
+# Tokenization is the process of breaking text into individual words or tokens. This is a crucial step in natural 
+# language processing (NLP) tasks such as sentiment analysis, text classification, and language modeling.
+
+
+def tokenize_text(text):
+    """
+    Tokenize text by splitting it into individual words.
+
+    :param text: The text to be tokenized
+    :return: A list of tokens
+    """
+    tokenized = []
+    for word in text.split():
+        tokenized.append(word)
+    return tokenized
+
 
 if __name__ == '__main__':
     subreddit_name = input("Enter the subreddit name (without /r/): ")
@@ -75,10 +110,3 @@ if __name__ == '__main__':
         print("Invalid number entered. Defaulting to 5 posts.")
         post_limit = 5
     get_posts_and_comments(subreddit_name, post_limit)
-
-
-## TO DO
-# 1. Add error handling for invalid subreddit names.
-# 2. Add a function to retrieve the most popular subreddits based on the number of subscribers.
-# 3. Create a function to prepare text for tokenization and analysis (e.g., remove URLs, emojis, etc.).
-# 4. Add a function to save the retrieved data to a file for further analysis.
