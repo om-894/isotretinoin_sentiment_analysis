@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
     try:
         dataframe = pd.read_csv("data-raw/isotret_subreddits.csv")
-        subreddit_list = dataframe['subreddit'].dropna().tolist()[:5]  # Process only first 2 subreddits for now
+        subreddit_list = dataframe['subreddit'].dropna().tolist()[:5]  # Process only first 5 subreddits for now
         all_data = []
         
         for subreddit_name in subreddit_list:
@@ -125,7 +125,7 @@ if __name__ == '__main__':
 # 2. add column for subreddit name
 # 3. new data folder for each individual subreddit
 # 4. test the limits on how many posts can be retrieved
-# 5. when coming to performing sentiment analysis on the comments, potentially combine them for each post
+# 5. Sentiment analysis on each comment??
 # 6. Filter for most popular posts (n=10)
 
 # Unused functions
