@@ -29,11 +29,6 @@ reddit = praw.Reddit(
     user_agent='script:SubAndCommentRetriever:v1.0 (by /u/omquillan)'
 )
 
-###############################################################
-###             Find most popular subreddits                ###
-###############################################################
-
-
 def get_most_popular_subreddits(limit=5):
     """
     Retrieves the most popular subreddits based on the number of subscribers.
@@ -45,7 +40,7 @@ def get_most_popular_subreddits(limit=5):
 
 def clean_text(text):
     """
-    Cleans the text by removing commas, newlines, dashes, and extra spaces.
+    Cleans the text by removing newlines, dashes, and extra spaces.
 
     :param text: The text to clean
     :return: The cleaned text
@@ -74,7 +69,7 @@ def clean_submission(submission, subreddit_name):
     
     return post_data
 
-def get_posts_and_comments(subreddit_name, limit=10):
+def get_posts_and_comments(subreddit_name, limit=1):
     """
     Retrieves posts and their comments from a given subreddit.
 
@@ -100,8 +95,7 @@ def get_posts_and_comments(subreddit_name, limit=10):
 
     return posts_and_comments
 
-    
-def write_to_csv(data, filename='reddit_posts.csv'):
+def write_to_csv(data, filename='combined_reddit_posts.csv'):
     """
     Writes the data to a CSV file.
 
@@ -120,6 +114,36 @@ def write_to_csv(data, filename='reddit_posts.csv'):
                 "subreddit": post["subreddit"]
             })
 
+if __name__ == '__main__':
+    dataframe = pd.read_csv("data-raw/isotret_subreddits.csv")
+
+    # Convert subreddit column to a list and take the first subreddit
+    retrieved_subreddits = dataframe['subreddit'].tolist()[:2]
+
+    # Loop through the subreddits and get the posts and comments
+    combined_data = []
+
+    for subreddit in retrieved_subreddits:
+        print(f"Processing subreddit: {subreddit}")
+        posts_and_comments = get_posts_and_comments(subreddit)
+        if posts_and_comments:
+            print(f"Retrieved {len(posts_and_comments)} posts from {subreddit}")
+            write_to_csv(posts_and_comments)
+        else:
+            print(f"No posts retrieved from {subreddit}")
+
+# PROBLEMS:
+
+# 1. Forbidden message
+# I ran into this issue because the subreddit I was trying to connect to had gone private. So my suggestion would be to 
+# first check if the subreddit you are connecting to will allow the account the bot is setup with to access that subreddit.
+# potential fix: check if the subreddit is private and if it is, skip it.
+# potential fix: put rate limit on posts down to 10 (ideally the 10 most popular ones)
+
+
+
+# Nothing is going in to 
+
 
 ## TO DO
 # 1. put the data to be in .csv format. I need to have a post_title column, post_body column, comment column (where all comments are combined into one paragraph)
@@ -133,44 +157,3 @@ def write_to_csv(data, filename='reddit_posts.csv'):
 #     subreddit = reddit.subreddit(subreddit_name)
 #     pattern = fr'\b{subreddit_name}\b'
 #     return bool(re.search(pattern, subreddit.selftext, re.IGNORECASE))
-
-
-
-
-if __name__ == '__main__':
-    dataframe = pd.read_csv("data-raw/isotret_subreddits.csv")
-
-    # Convert subreddit column to a list and take the first two subreddits
-    retrieved_subreddits = dataframe['subreddit'].tolist()[:2]
-
-    # Loop through the subreddits and get the posts and comments
-    combined_data = []
-
-    for subreddit in retrieved_subreddits:
-        print(f"Processing subreddit: {subreddit}")
-        posts_and_comments = get_posts_and_comments(subreddit)
-        if posts_and_comments:
-            print(f"Retrieved {len(posts_and_comments)} posts from {subreddit}")
-            combined_data.extend(posts_and_comments)
-        else:
-            print(f"No posts retrieved from {subreddit}")
-
-    # Write combined data to CSV
-    if combined_data:
-        write_to_csv(combined_data, 'combined_reddit_posts.csv')
-        print(f"Data has been written to combined_reddit_posts.csv")
-    else:
-        print("No data to write to CSV")
-
-
-# PROBLEMS:
-
-# 1. Forbidden message
-# I ran into this issue because the subreddit I was trying to connect to had gone private. So my suggestion would be to 
-# first check if the subreddit you are connecting to will allow the account the bot is setup with to access that subreddit.
-# potential fix: check if the subreddit is private and if it is, skip it.
-# potential fix: put rate limit on posts down to 10 (ideally the 10 most popular ones)
-
-
-
-# Nothing is going in to 
