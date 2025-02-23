@@ -115,6 +115,10 @@ if __name__ == '__main__':
         print(f"Error reading subreddit list: {e}")
 
 
+# first post in csv for AccutaneDamage subreddit should be this:
+# https://www.reddit.com/r/AccutaneDamage/comments/fwmkhc/response_to_did_accutane_cause_my_health_issues/
+
+
 # to do:
 # 1. combine all subreddits into one file (but do this additionally to having them separate 
 # - so i can compare sentiments between subreddits)
@@ -122,7 +126,7 @@ if __name__ == '__main__':
 # 3. new data folder for each individual subreddit
 # 4. test the limits on how many posts can be retrieved
 # 5. when coming to performing sentiment analysis on the comments, potentially combine them for each post
-
+# 6. Filter for most popular posts (n=10)
 
 # Unused functions
 
