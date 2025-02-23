@@ -4,6 +4,8 @@ import praw
 import re
 import csv
 import pandas as pd
+from prawcore.exceptions import Forbidden, TooManyRequests
+import time
 
 # This script retrieves posts and their comments from a specified subreddit.
 # Please ensure you have installed PRAW (run: pip install praw)
@@ -48,7 +50,6 @@ def clean_text(text):
     :param text: The text to clean
     :return: The cleaned text
     """
-    text = text.replace(',', ' ')
     text = text.replace('\n', ' ')
     text = text.replace('-', ' ')
     text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with a single space
@@ -73,7 +74,7 @@ def clean_submission(submission, subreddit_name):
     
     return post_data
 
-def get_posts_and_comments(subreddit_name, limit=5):
+def get_posts_and_comments(subreddit_name, limit=10):
     """
     Retrieves posts and their comments from a given subreddit.
 
@@ -83,10 +84,20 @@ def get_posts_and_comments(subreddit_name, limit=5):
     subreddit = reddit.subreddit(subreddit_name)
     posts_and_comments = []
 
-    for submission in subreddit.hot(limit=limit):
-        cleaned_data = clean_submission(submission)
-        posts_and_comments.append(cleaned_data)
-    
+    try:
+        for submission in subreddit.hot(limit=limit):  # Limit the number of posts to retrieve
+            print(f"Processing submission: {submission.title}")
+            cleaned_data = clean_submission(submission, subreddit_name)
+            posts_and_comments.append(cleaned_data)
+            time.sleep(1)  # Add a delay between requests to avoid rate limits
+    except Forbidden:
+        print(f"Access to subreddit {subreddit_name} is forbidden. Skipping...")
+        return []
+    except TooManyRequests:
+        print("Rate limit exceeded. Waiting for 60 seconds before retrying...")
+        time.sleep(60)
+        return get_posts_and_comments(subreddit_name, limit)  # Retry after delay
+
     return posts_and_comments
 
     
@@ -98,11 +109,16 @@ def write_to_csv(data, filename='reddit_posts.csv'):
     :param filename: The name of the CSV file
     """
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerow(["post_title", "post_body", "comments"])
+        writer = csv.DictWriter(file, fieldnames=["post_title", "post_body", "comments", "subreddit"], quotechar='"', quoting=csv.QUOTE_ALL)
+        writer.writeheader()
         
         for post in data:
-            writer.writerow([post["title"], post["body"], " ".join(post["comments"])])
+            writer.writerow({
+                "post_title": post["title"],
+                "post_body": post["body"],
+                "comments": " ".join(post["comments"]),
+                "subreddit": post["subreddit"]
+            })
 
 
 ## TO DO
@@ -119,33 +135,42 @@ def write_to_csv(data, filename='reddit_posts.csv'):
 #     return bool(re.search(pattern, subreddit.selftext, re.IGNORECASE))
 
 
-# Now to read in a list of subreddits retrived from R in order to loop through them
-# keep in mind limit parameter
-
-dataframe = pd.read_csv("data-raw/isotret_subreddits.csv")
-
-# convert subreddit column to a list
-retrived_subreddits = dataframe.subreddit.tolist()
-
-
 
 
 if __name__ == '__main__':
     dataframe = pd.read_csv("data-raw/isotret_subreddits.csv")
 
-    # Convert subreddit column to a list
+    # Convert subreddit column to a list and take the first two subreddits
     retrieved_subreddits = dataframe['subreddit'].tolist()[:2]
 
     # Loop through the subreddits and get the posts and comments
     combined_data = []
 
     for subreddit in retrieved_subreddits:
+        print(f"Processing subreddit: {subreddit}")
         posts_and_comments = get_posts_and_comments(subreddit)
-        combined_data.extend(posts_and_comments)
-
-    # Convert combined data to DataFrame
-    combined_df = pd.DataFrame(combined_data)
+        if posts_and_comments:
+            print(f"Retrieved {len(posts_and_comments)} posts from {subreddit}")
+            combined_data.extend(posts_and_comments)
+        else:
+            print(f"No posts retrieved from {subreddit}")
 
     # Write combined data to CSV
-    combined_df.to_csv('combined_reddit_posts.csv', index=False)
+    if combined_data:
+        write_to_csv(combined_data, 'combined_reddit_posts.csv')
+        print(f"Data has been written to combined_reddit_posts.csv")
+    else:
+        print("No data to write to CSV")
 
+
+# PROBLEMS:
+
+# 1. Forbidden message
+# I ran into this issue because the subreddit I was trying to connect to had gone private. So my suggestion would be to 
+# first check if the subreddit you are connecting to will allow the account the bot is setup with to access that subreddit.
+# potential fix: check if the subreddit is private and if it is, skip it.
+# potential fix: put rate limit on posts down to 10 (ideally the 10 most popular ones)
+
+
+
+# Nothing is going in to 
