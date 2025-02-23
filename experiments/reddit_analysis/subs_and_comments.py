@@ -3,6 +3,7 @@
 import praw
 import re
 import csv
+import pandas as pd
 
 # This script retrieves posts and their comments from a specified subreddit.
 # Please ensure you have installed PRAW (run: pip install praw)
@@ -102,6 +103,33 @@ def write_to_csv(data, filename='reddit_posts.csv'):
         for post in data:
             writer.writerow([post["title"], post["body"], " ".join(post["comments"])])
 
+
+## TO DO
+# 1. put the data to be in .csv format. I need to have a post_title column, post_body column, comment column (where all comments are combined into one paragraph)
+# 2. Need to remove commas from the posts and comments. Also need to remove newlines and other spaces such as dashes, etc.
+# 3. Was thinking about potentially ignoring posts that dont fully relate to acutane (or whatever subreddit i am using) but this is hard to do
+#    Also this could be a good experiemtn to see if comment and post sentiment is similar or different.
+# 4. Add column in csv file that has the subreddit name
+# 5. Write a loop to get all of the posts from all of the subreddits that i need. 
+
+# def check_subreddit(subreddit_name):
+#     subreddit = reddit.subreddit(subreddit_name)
+#     pattern = fr'\b{subreddit_name}\b'
+#     return bool(re.search(pattern, subreddit.selftext, re.IGNORECASE))
+
+
+# Now to read in a list of subreddits retrived from R in order to loop through them
+# keep in mind limit parameter
+
+dataframe = pd.read_csv("data-raw/isotret_subreddits.csv")
+
+# convert subreddit column to a list
+retrived_subreddits = dataframe.subreddit.tolist()
+
+
+
+
+
 if __name__ == '__main__':
     subreddit_name = input("Enter the subreddit name (without /r/): ")
     try:
@@ -113,15 +141,3 @@ if __name__ == '__main__':
     posts_and_comments = get_posts_and_comments(subreddit_name, post_limit)
     write_to_csv(posts_and_comments, f'{subreddit_name}_reddit_posts.csv')
 
-## TO DO
-# 1. put the data to be in .csv format. I need to have a post_title column, post_body column, comment column (where all comments are combined into one paragraph)
-# 2. Need to remove commas from the posts and comments. Also need to remove newlines and other spaces such as dashes, etc.
-# 3. Was thinking about potentially ignoring posts that dont fully relate to acutane (or whatever subreddit i am using) but this is hard to do
-#    Also this could be a good experiemtn to see if comment and post sentiment is similar or different.
-# 4. Add column in csv file that has the subreddit name
-# 5. Write a loop to get all of the posts from all of the subreddits that i need. 
-
-def check_subreddit(subreddit_name):
-    subreddit = reddit.subreddit(subreddit_name)
-    pattern = fr'\b{subreddit_name}\b'
-    return bool(re.search(pattern, subreddit.selftext, re.IGNORECASE))
