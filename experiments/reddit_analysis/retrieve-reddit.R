@@ -3,10 +3,10 @@ library(RedditExtractoR)
 library(tidyverse)
 
 # find subreddits based on a search query
-vacc_subreddits <- find_subreddits("isotretinoin")
+iso_subreddits <- find_subreddits("isotretinoin")
 
 # 24-11-2024 gave 33 subreddits
-write_csv(vacc_subreddits, "data-raw/isotret_subreddits.csv")
+write_csv(iso_subreddits, "data-raw/isotret_subreddits.csv")
 
 # find URLs to threads of interest in subrettit named 'accutane'.
 top_urls <- find_thread_urls(subreddit = "accutane",
