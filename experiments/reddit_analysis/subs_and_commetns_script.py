@@ -70,6 +70,27 @@ def get_posts_and_comments(reddit, subreddit_name, limit=5):
         print(f"Unexpected error with r/{subreddit_name}: {e}")
     return []
 
+def get_top_posts_and_comments(reddit, subreddit_name, limit=10):
+    """
+    Retrieves top posts and their comments from a given subreddit.
+    """
+    try:
+        subreddit = reddit.subreddit(subreddit_name)
+        posts_and_comments = []
+        for submission in subreddit.top(time_filter="all", limit=limit):        # default is "all"
+            posts_and_comments.append(clean_submission(submission, subreddit_name))
+        return posts_and_comments
+    except Forbidden:
+        print(f"Access denied to r/{subreddit_name}. Skipping...")
+    except TooManyRequests as e:
+        wait_time = int(e.response.headers.get('Retry-After', 60))
+        print(f"Rate limit reached. Waiting for {wait_time} seconds...")
+        time.sleep(wait_time)
+        return get_top_posts_and_comments(reddit, subreddit_name, limit)
+    except Exception as e:
+        print(f"Unexpected error with r/{subreddit_name}: {e}")
+    return []
+
 def write_to_csv(data, filename):
     """
     Writes the data to a CSV file, with each comment on a separate row.
@@ -100,6 +121,7 @@ if __name__ == '__main__':
         for subreddit_name in subreddit_list:
             print(f"Fetching data from r/{subreddit_name}...")
             posts_and_comments = get_posts_and_comments(reddit, subreddit_name, limit=5)
+            # posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=10)
             if posts_and_comments:
                 write_to_csv(posts_and_comments, f'{subreddit_name}_reddit_posts.csv')
                 print(f"Saved {subreddit_name}_reddit_posts.csv")
@@ -124,7 +146,7 @@ if __name__ == '__main__':
 # - so i can compare sentiments between subreddits)
 # 2. add column for subreddit name
 # 3. new data folder for each individual subreddit
-# 4. Filter for most popular posts for each subreddit (n=10)
+# 4. find and filter for most popular posts for each subreddit (n=10)
 # 5. test the limits on how many posts can be retrieved
 # 6. Sentiment analysis on each comment?
 
