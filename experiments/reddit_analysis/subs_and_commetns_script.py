@@ -23,7 +23,7 @@ import time
 
 def clean_text(text):
     """
-    Cleans the text by removing commas, newlines, dashes, and extra spaces.
+    Cleans the text by removing commas, newlines, dashes and extra spaces.
     """
     text = text.replace(',', ' ').replace('\n', ' ').replace('-', ' ')
     text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with a single space
@@ -31,7 +31,7 @@ def clean_text(text):
 
 def clean_submission(submission, subreddit_name):
     """
-    Cleans post title, body, and comments, and adds subreddit name.
+    Cleans post title, body, and comments and adds subreddit name.
     """
     post_data = {
         "subreddit": subreddit_name,
@@ -119,16 +119,16 @@ if __name__ == '__main__':
 # https://www.reddit.com/r/AccutaneDamage/comments/fwmkhc/response_to_did_accutane_cause_my_health_issues/
 
 
-# to do:
+# To do:
 # 1. combine all subreddits into one file (but do this additionally to having them separate 
 # - so i can compare sentiments between subreddits)
 # 2. add column for subreddit name
 # 3. new data folder for each individual subreddit
-# 4. test the limits on how many posts can be retrieved
-# 5. Sentiment analysis on each comment??
-# 6. Filter for most popular posts (n=10)
+# 4. Filter for most popular posts for each subreddit (n=10)
+# 5. test the limits on how many posts can be retrieved
+# 6. Sentiment analysis on each comment?
 
-# Unused functions
+### Unused functions ###
 
 # def check_subreddit(subreddit_name):
 #     subreddit = reddit.subreddit(subreddit_name)
