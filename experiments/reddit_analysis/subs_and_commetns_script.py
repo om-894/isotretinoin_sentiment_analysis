@@ -74,7 +74,8 @@ def write_to_csv(data, filename):
     """
     Writes the data to a CSV file, with each comment on a separate row.
     """
-    with open(filename, mode='w', newline='', encoding='utf-8') as file:
+    filepath = f"data-raw/reddit-posts-and-comments/{filename}"
+    with open(filepath, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(["subreddit", "post_id", "post_title", "post_body", "comment"])
         for post in data:
@@ -121,6 +122,9 @@ if __name__ == '__main__':
 # 3. new data folder for each individual subreddit
 # 4. test the limits on how many posts can be retrieved
 # 5. when coming to performing sentiment analysis on the comments, potentially combine them for each post
+
+
+# Unused functions
 
 # def check_subreddit(subreddit_name):
 #     subreddit = reddit.subreddit(subreddit_name)
