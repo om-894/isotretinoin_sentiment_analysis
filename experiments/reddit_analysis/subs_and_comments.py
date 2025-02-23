@@ -54,11 +54,12 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with a single space
     return text.strip()
 
-def clean_submission(submission):
+def clean_submission(submission, subreddit_name):
     post_data = {
         "title": clean_text(submission.title),
         "body": clean_text(submission.selftext),
-        "comments": []
+        "comments": [],
+        "subreddit": subreddit_name
     }
     
     # Ensure all comments are loaded (removes the 'more comments' placeholders)
@@ -129,15 +130,22 @@ retrived_subreddits = dataframe.subreddit.tolist()
 
 
 
-
 if __name__ == '__main__':
-    subreddit_name = input("Enter the subreddit name (without /r/): ")
-    try:
-        post_limit = int(input("How many posts would you like to retrieve? "))
-    except ValueError:
-        print("Invalid number entered. Defaulting to 5 posts.")
-        post_limit = 5
+    dataframe = pd.read_csv("data-raw/isotret_subreddits.csv")
 
-    posts_and_comments = get_posts_and_comments(subreddit_name, post_limit)
-    write_to_csv(posts_and_comments, f'{subreddit_name}_reddit_posts.csv')
+    # Convert subreddit column to a list
+    retrieved_subreddits = dataframe['subreddit'].tolist()[:2]
+
+    # Loop through the subreddits and get the posts and comments
+    combined_data = []
+
+    for subreddit in retrieved_subreddits:
+        posts_and_comments = get_posts_and_comments(subreddit)
+        combined_data.extend(posts_and_comments)
+
+    # Convert combined data to DataFrame
+    combined_df = pd.DataFrame(combined_data)
+
+    # Write combined data to CSV
+    combined_df.to_csv('combined_reddit_posts.csv', index=False)
 
