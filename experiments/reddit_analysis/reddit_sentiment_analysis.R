@@ -43,7 +43,7 @@ data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts
 # I want to also keep the title of the post but just combine the comments. 
 # Combine comments for each post_id and keep the post title and text
 df_combined <- data %>%
-  group_by(post_title, post_body) %>%  # Keep post title and text
+  group_by(post_id, post_title, post_body) %>%  # Keep post id, title and text
   summarise(comments_combined = paste(comment, collapse = " "), .groups = "drop")
 
 # View the result
@@ -111,17 +111,17 @@ most_negative <- post_sentiment %>%
   arrange(sentiment) %>%  # Sort by sentiment
   select(post_title, sentiment)  # Select the PMID and sentiment
 
-# Filter and plot the top 10 most negative sentiment scores in descending order
+# shorten post title so it fits on the graph
 most_negative %>%
   head(10) %>%  # Take the 10 most negative abstracts
-  ggplot(aes(x = reorder(as.factor(pmid), -sentiment), y = sentiment)) +
+  ggplot(aes(x = reorder(as.factor(post_title), -sentiment), y = sentiment)) +
   geom_col(fill = "indianred3", color = "indianred3") +  # Red bars with black outlines
   coord_flip() +  # Flip coordinates for better readability
-  labs(title = "Top 10 Most Negative Sentiments in Abstracts",
-       x = "PMID",
+  labs(title = "Top 10 Most Negative Sentiments in posts",
+       x = "post title",
        y = "Net Sentiment Score") +
-  theme_minimal()
-
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 2))  # Reduce font size for better readability
 
 
 
