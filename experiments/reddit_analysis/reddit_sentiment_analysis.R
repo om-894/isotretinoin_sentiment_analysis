@@ -264,6 +264,41 @@ tokenized_comments %>%
   comparison.cloud(colors = c("blue", "red"),         # Colors for positive and negative
                    max.words = 100)                   # Limit to 100 most common words
 
+# save the plot
+ggsave("figures/comparison_word_cloud.png")
+
+
+#### Analyzing Units Beyond Just Words ####
+
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+# Tokenize abstracts into sentences
+abstract_sentences <- abstracts_data %>%
+  mutate(sentences = str_split(abstract, "\\.\\s+")) %>%  # Split at full stops followed by space
+  unnest(sentences) %>%                                  # Expand sentences into individual rows
+  mutate(sentences = str_trim(sentences))                # Remove extra whitespace
+
+
+abstract_sentences <- abstract_sentences %>%
+  filter(sentences != "")
+
+# print a sample sentence
+print(head(abstract_sentences))
+
+# We want tot keep the sentences column, so we use drop = FALSE
+# unnest_tokens() will create a new column with the tokenized words but will 
+# now the original sentences column. Normally it would drop it.
+
+# Tokenize the sentences into words, keeping the sentences column
+tidy_sentences <- abstract_sentences %>%
+  unnest_tokens(word, sentences, drop = FALSE)
+
+# View the tokenized data
+print(head(tidy_sentences))
+
+
 
 ### Tokenize the post body also ###
 
