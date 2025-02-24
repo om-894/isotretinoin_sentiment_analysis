@@ -54,6 +54,8 @@ head(df_combined)
 df_combined <- df_combined %>%
   filter(comments_combined != "No comments")
 
-
+# Tokenize the comments into words
+tokenized_comments <- df_combined %>%
+  unnest_tokens(output = word, input = comments_combined)  # Tokenize the comments into words
 
 
