@@ -180,8 +180,19 @@ sentiments_combined <- bind_rows(
   sentiment_bing_nrc %>% select(post_id, post_title, sentiment, method)  # Select consistent columns
 )
 
+# Plot the sentiments for each lexicon (method)
+ggplot(sentiments_combined, aes(x = as.factor(post_id), y = sentiment, fill = method)) +
+  geom_col(show.legend = FALSE) +                 # Use columns to represent sentiment scores
+  facet_wrap(~method, ncol = 1, scales = "free_y") +  # Facet by sentiment method
+  labs(title = "Sentiment Analysis by Lexicon",
+       x = "Subreddit post (post id)",
+       y = "Net Sentiment Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),            # Hide x-axis labels for clarity
+        axis.ticks.x = element_blank())           # Remove x-axis ticks
 
-
+# All three lexicons agree on the overall trends in sentiment.
+# The sentiment scores are relatively balanced, with a mix of positive and negative sentiments
 
 
 
