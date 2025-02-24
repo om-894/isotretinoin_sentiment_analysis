@@ -33,5 +33,18 @@ print(head(bing))
 print(head(nrc))
 
 
+#### Perform Sentiment Analysis on the comments and posts from reddit ####
+# data was gathered using python script 'subs_and_comments_script.py'
+# We will tokenize the articles into words and perform sentiment analysis.
 
+# Load the dataset
+data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts.csv")
+
+# Combine comments for each post_id
+df_combined <- data %>%
+  group_by(post_id) %>%
+  summarise(text = paste(comment, collapse = " "))
+
+# View the result
+head(df_combined)
 
