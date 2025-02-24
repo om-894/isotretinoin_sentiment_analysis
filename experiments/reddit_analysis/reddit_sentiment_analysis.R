@@ -96,7 +96,7 @@ sentiment_bing <- tokenized_comments %>%
 
 # Count positive and negative words for each abstract
 post_sentiment <- sentiment_bing %>%
-  group_by(post_title) %>%                  # Group by post (identified by post_title)
+  group_by(post_id, post_title) %>%                  # Group by post (identified by post_title)
   count(sentiment) %>%                # Count positive and negative words
   spread(sentiment, n, fill = 0) %>%  # Convert to wide format
   mutate(sentiment = positive - negative)  # Calculate net sentiment
@@ -109,7 +109,7 @@ print(head(post_sentiment))
 # Filter the posts with the most negative sentiments in decending order
 most_negative <- post_sentiment %>%
   arrange(sentiment) %>%  # Sort by sentiment
-  select(post_title, sentiment)  # Select the PMID and sentiment
+  select(post_id, post_title, sentiment)  # Select the post_id, post_title and sentiment
 
 # shorten post title so it fits on the graph
 most_negative %>%
