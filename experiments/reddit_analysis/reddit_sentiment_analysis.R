@@ -194,6 +194,17 @@ ggplot(sentiments_combined, aes(x = as.factor(post_id), y = sentiment, fill = me
 # All three lexicons agree on the overall trends in sentiment.
 # The sentiment scores are relatively balanced, with a mix of positive and negative sentiments
 
+#### Most Common Positive and Negative Words ####
+# Identify words that contribute most to positive and negative sentiment
+
+# Identify words that contribute most to positive and negative sentiment
+bing_word_counts <- tokenized_comments %>%
+  inner_join(bing, by = "word") %>%         # Join with Bing lexicon
+  count(word, sentiment, sort = TRUE) %>%  # Count word occurrences by sentiment
+  ungroup()
+
+# View the most common positive and negative words
+print(head(bing_word_counts, 10))
 
 
 
