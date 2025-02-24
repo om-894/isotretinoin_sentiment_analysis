@@ -206,7 +206,32 @@ bing_word_counts <- tokenized_comments %>%
 # View the most common positive and negative words
 print(head(bing_word_counts, 10))
 
+# Plot the most common positive and negative words
+bing_word_counts %>%
+  group_by(sentiment) %>%
+  top_n(10, n) %>%                        # Get top 10 words by sentiment
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%     # Reorder words by frequency
+  ggplot(aes(x = word, y = n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +         # Use columns to represent counts
+  facet_wrap(~sentiment, scales = "free_y") +  # Facet by sentiment
+  coord_flip() +                          # Flip coordinates for readability
+  labs(title = "Most Common Positive and Negative Words in Abstracts",
+       x = NULL,
+       y = "Frequency")
 
+# The word "like" may be incorrectly influencing sentiment analysis:
+# - "like" is classified as positive in the Bing lexicon.
+# - However, "like" is often used in a neutral context, such as "I like apples."
+
+# To address this issue, we can create a custom stop word list to exclude "like" 
+# from the analysis.
+
+# Create a custom stop word list to exclude "patient"
+custom_stop_words <- bind_rows(
+  tibble(word = c("like"), lexicon = c("custom")),  # Add "like" as a custom stop word
+  stop_words                                               # Combine with the standard stop word list
+)
 
 
 
