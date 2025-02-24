@@ -54,6 +54,11 @@ head(df_combined)
 df_combined <- df_combined %>%
   filter(comments_combined != "No comments")
 
+
+#############################################################################
+#       Tokenize the comments into words and perform sentiment analysis     #
+#############################################################################
+
 # Tokenize the comments into words
 tokenized_comments <- df_combined %>%
   unnest_tokens(output = word, input = comments_combined)  # Tokenize the comments into words
@@ -96,12 +101,12 @@ sentiment_bing <- tokenized_comments %>%
 
 # Count positive and negative words for each abstract
 post_sentiment <- sentiment_bing %>%
-  group_by(post_id, post_title) %>%                  # Group by post (identified by post_title)
+  group_by(post_id, post_title, post_body) %>%                  # Group by post (identified by post_title)
   count(sentiment) %>%                # Count positive and negative words
   spread(sentiment, n, fill = 0) %>%  # Convert to wide format
   mutate(sentiment = positive - negative)  # Calculate net sentiment
 
-# View sentiment scores for each abstract
+# View sentiment scores for each posts' comments
 print(head(post_sentiment))
 
 # Looks interesting. The negative posts are definately showing the lowest sentiment scores.
@@ -114,15 +119,39 @@ most_negative <- post_sentiment %>%
 # shorten post title so it fits on the graph
 most_negative %>%
   head(10) %>%  # Take the 10 most negative abstracts
-  ggplot(aes(x = reorder(as.factor(post_title), -sentiment), y = sentiment)) +
+  ggplot(aes(x = reorder(as.factor(post_id), -sentiment), y = sentiment)) +
   geom_col(fill = "indianred3", color = "indianred3") +  # Red bars with black outlines
   coord_flip() +  # Flip coordinates for better readability
-  labs(title = "Top 10 Most Negative Sentiments in posts",
+  labs(title = "Top 10 Most Negative Sentiments in posts comments",
        x = "post title",
        y = "Net Sentiment Score") +
   theme_minimal() +
-  theme(axis.text.y = element_text(size = 2))  # Reduce font size for better readability
+  theme(axis.text.y = element_text(size = 8))  # Reduce font size
+
+# save the plot
+# ggsave("figures/reddit_comments_negative_sentiments.png")
+
+# Filter the PMIDs with the most positive sentiments in decending order
+most_positive <- post_sentiment %>%
+  arrange(desc(sentiment)) %>%  # Sort by sentiment in descending order
+  select(post_id, post_title, sentiment)  # Select the PMID and sentiment
+
+# View sentiment scores for each posts' comments
+print(head(most_positive))
+
+# Filter and plot the top 10 most positive sentiment scores in ascending order
+most_positive %>%
+  head(10) %>%  # Take the 10 most positive abstracts
+  ggplot(aes(x = reorder(as.factor(post_id), sentiment), y = sentiment)) +
+  geom_col(fill = "lightblue", color = "lightblue") +  # Green bars with green outlines
+  coord_flip() +  # Flip coordinates for better readability
+  labs(title = "Top 10 Most Positive Sentiments in post comments",
+       x = "post title",
+       y = "Net Sentiment Score") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 8))
 
 
+### Tokenize the post body also ###
 
 
