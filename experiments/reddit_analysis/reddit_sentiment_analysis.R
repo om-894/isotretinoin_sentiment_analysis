@@ -245,7 +245,24 @@ tidy_abstracts_no_stop %>%
   count(word) %>%                     # Count word occurrences
   with(wordcloud(word, n, max.words = 100))  # Generate a word cloud
 
+# Prepare data for comparison word cloud
+word_counts_sentiment <- tokenized_comments %>%
+  inner_join(bing, by = "word") %>%     # Join with Bing lexicon for sentiments
+  count(word, sentiment, sort = TRUE) %>%  # Count words by sentiment
+  acast(word ~ sentiment, value.var = "n", fill = 0)  # Reshape data for comparison
 
+# Create a comparison word cloud
+comparison.cloud(word_counts_sentiment,
+                 colors = c("blue", "red"),  # Colors for positive and negative words
+                 max.words = 100)           # Limit to 100 most common words
+
+# Create a comparison word cloud for abstracts
+tokenized_comments %>%
+  inner_join(get_sentiments("bing"), by = "word") %>%  # Join with Bing lexicon
+  count(word, sentiment, sort = TRUE) %>%             # Count word occurrences by sentiment
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%  # Reshape for comparison
+  comparison.cloud(colors = c("blue", "red"),         # Colors for positive and negative
+                   max.words = 100)                   # Limit to 100 most common words
 
 
 ### Tokenize the post body also ###
