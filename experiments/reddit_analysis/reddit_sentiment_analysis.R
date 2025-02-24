@@ -40,11 +40,20 @@ print(head(nrc))
 # Load the dataset
 data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts.csv")
 
-# Combine comments for each post_id
+# I want to also keep the title of the post but just combine the comments. 
+# Combine comments for each post_id and keep the post title and text
 df_combined <- data %>%
-  group_by(post_id) %>%
-  summarise(text = paste(comment, collapse = " "))
+  group_by(post_title, post_body) %>%  # Keep post title and text
+  summarise(comments_combined = paste(comment, collapse = " "), .groups = "drop")
 
 # View the result
 head(df_combined)
+
+# Looks great. I now need to drop posts with no comments, since they wont be of as 
+# much use as pots with comments
+df_combined <- df_combined %>%
+  filter(comments_combined != "No comments")
+
+
+
 
