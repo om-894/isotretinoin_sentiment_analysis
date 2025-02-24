@@ -89,3 +89,40 @@ print(head(fear_words, 10))
 # The most common words associated with fear in the comments are related to health risks,
 # mental health concerns, and general anxiety.
 
+### Bing lexicon sentiment analysis ###
+# Assign sentiment to words using the Bing lexicon
+sentiment_bing <- tokenized_comments %>%
+  inner_join(bing, by = "word")
+
+# Count positive and negative words for each abstract
+post_sentiment <- sentiment_bing %>%
+  group_by(post_title) %>%                  # Group by post (identified by post_title)
+  count(sentiment) %>%                # Count positive and negative words
+  spread(sentiment, n, fill = 0) %>%  # Convert to wide format
+  mutate(sentiment = positive - negative)  # Calculate net sentiment
+
+# View sentiment scores for each abstract
+print(head(post_sentiment))
+
+# Looks interesting. The negative posts are definately showing the lowest sentiment scores.
+
+# Filter the posts with the most negative sentiments in decending order
+most_negative <- post_sentiment %>%
+  arrange(sentiment) %>%  # Sort by sentiment
+  select(post_title, sentiment)  # Select the PMID and sentiment
+
+# Filter and plot the top 10 most negative sentiment scores in descending order
+most_negative %>%
+  head(10) %>%  # Take the 10 most negative abstracts
+  ggplot(aes(x = reorder(as.factor(pmid), -sentiment), y = sentiment)) +
+  geom_col(fill = "indianred3", color = "indianred3") +  # Red bars with black outlines
+  coord_flip() +  # Flip coordinates for better readability
+  labs(title = "Top 10 Most Negative Sentiments in Abstracts",
+       x = "PMID",
+       y = "Net Sentiment Score") +
+  theme_minimal()
+
+
+
+
+

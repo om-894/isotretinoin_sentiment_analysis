@@ -83,7 +83,7 @@ print(head(fear_words, 10))
 # - The dataset primarily addresses topics such as disease risk, adverse outcomes, 
 # and medical conditions, reflecting a strong focus on healthcare and research.
 
-#### Bing lexicon sentiment analysis ####
+### Bing lexicon sentiment analysis ###
 # Assign sentiment to words using the Bing lexicon
 sentiment_bing <- tidy_abstracts %>%
   inner_join(bing, by = "word")
