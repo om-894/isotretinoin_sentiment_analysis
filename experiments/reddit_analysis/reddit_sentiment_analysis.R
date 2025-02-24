@@ -233,6 +233,18 @@ custom_stop_words <- bind_rows(
   stop_words                                               # Combine with the standard stop word list
 )
 
+#### Creating Word Clouds ####
+# Visualize the most common words using word clouds
+
+# Remove stop words
+tidy_abstracts_no_stop <- tokenized_comments %>%
+  anti_join(stop_words, by = "word")  # Exclude stop words
+
+# Create a word cloud of the most common words
+tidy_abstracts_no_stop %>%
+  count(word) %>%                     # Count word occurrences
+  with(wordcloud(word, n, max.words = 100))  # Generate a word cloud
+
 
 
 
