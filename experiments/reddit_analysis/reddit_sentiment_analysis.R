@@ -68,6 +68,10 @@ print(head(tokenized_comments))
 
 
 ### NRC lexicon sentiment analysis ###
+sentiment_nrc <- tokenized_comments %>%
+  inner_join(nrc %>% filter(sentiment %in% c("positive", "negative")), by = "word") %>%
+  mutate(method = "NRC")
+
 # Filter the NRC lexicon for words associated with "fear"
 nrc_fear <- nrc %>%
   filter(sentiment == "fear")
@@ -97,7 +101,8 @@ print(head(fear_words, 10))
 ### Bing lexicon sentiment analysis ###
 # Assign sentiment to words using the Bing lexicon
 sentiment_bing <- tokenized_comments %>%
-  inner_join(bing, by = "word")
+  inner_join(bing, by = "word") %>%
+  mutate(method = "BING")
 
 # Count positive and negative words for each abstract
 post_sentiment <- sentiment_bing %>%
@@ -150,6 +155,38 @@ most_positive %>%
        y = "Net Sentiment Score") +
   theme_minimal() +
   theme(axis.text.y = element_text(size = 8))
+
+#### Analyzing Units Beyond Just Words ####
+# Tokenize text into sentences or chapters for sentiment analysis.
+
+# Sentiment using AFINN lexicon
+sentiment_afinn <- tokenized_comments %>%
+  inner_join(afinn, by = "word") %>%
+  group_by(post_id, post_title) %>%                  # Group by abstract
+  summarise(sentiment = sum(value)) %>%
+  mutate(method = "AFINN")
+
+# Combine Bing and NRC sentiments by grouping by `post_id`
+sentiment_bing_nrc <- bind_rows(sentiment_bing, sentiment_nrc) %>%
+  group_by(method, post_id, post_title) %>%               # Group by sentiment method and article
+  count(sentiment) %>%                     # Count occurrences of each sentiment
+  spread(sentiment, n, fill = 0) %>%       # Convert to wide format (positive/negative)
+  mutate(sentiment = positive - negative)  # Calculate net sentiment
+
+
+# Combine all sentiments (AFINN, Bing, NRC) into one dataset
+sentiments_combined <- bind_rows(
+  sentiment_afinn,         # Ensure AFINN is grouped by pmid
+  sentiment_bing_nrc %>% select(post_id, post_title, sentiment, method)  # Select consistent columns
+)
+
+
+
+
+
+
+
+
 
 
 ### Tokenize the post body also ###
