@@ -58,4 +58,34 @@ df_combined <- df_combined %>%
 tokenized_comments <- df_combined %>%
   unnest_tokens(output = word, input = comments_combined)  # Tokenize the comments into words
 
+# View the tokenized data
+print(head(tokenized_comments))
+
+
+### NRC lexicon sentiment analysis ###
+# Filter the NRC lexicon for words associated with "fear"
+nrc_fear <- nrc %>%
+  filter(sentiment == "fear")
+
+# Find the most common "fear" words in the comments
+fear_words <- tokenized_comments %>%
+  inner_join(nrc_fear, by = "word") %>%  # Join with fear words
+  count(word, sort = TRUE)              # Count occurrences
+
+# View the most common fear words
+print(head(fear_words, 10))
+
+# Summary of the top 10 most common words associated with the sentiment:
+# 
+# - `word`: Lists the specific words linked to the sentiment.
+# - `n`: Indicates the frequency of each word in the dataset.
+#
+# Key observations:
+# 1. High-frequency words such as "pain" (127) and "bad" (42) 
+# 2. Terms like "pain" "anxiety" and "medical" suggest discussions on health risks
+# 3. Terms "Depressed" and "anxiety" indicate mental health concerns
+#
+# Interpretation:
+# The most common words associated with fear in the comments are related to health risks,
+# mental health concerns, and general anxiety.
 
