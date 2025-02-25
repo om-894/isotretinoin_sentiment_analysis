@@ -133,5 +133,65 @@ most_negative %>%
 # save the plot
 # ggsave("figures/reddit_comments_negative_sentiments.png")
 
+# Filter the PMIDs with the most positive sentiments in decending order
+most_positive <- post_sentiment %>%
+  arrange(desc(sentiment)) %>%  # Sort by sentiment in descending order
+  select(subreddit, post_id, post_title, sentiment)  # Select the PMID and sentiment
+
+# View sentiment scores for each posts' comments
+print(head(most_positive))
+
+# Filter and plot the top 10 most positive sentiment scores in ascending order
+most_positive %>%
+  head(10) %>%  # Take the 10 most positive abstracts
+  ggplot(aes(x = reorder(as.factor(post_id), sentiment), y = sentiment)) +
+  geom_col(fill = "lightblue", color = "lightblue") +  # Green bars with green outlines
+  coord_flip() +  # Flip coordinates for better readability
+  labs(title = "Top 10 Most Positive Sentiments in post comments",
+       x = "post title",
+       y = "Net Sentiment Score") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 8))
+
+
+#### Analyzing Units Beyond Just Words ####
+# Tokenize text into sentences or chapters for sentiment analysis.
+
+# Sentiment using AFINN lexicon
+sentiment_afinn <- tokenized_posts %>%
+  inner_join(afinn, by = "word") %>%
+  group_by(post_id, post_title) %>%                  # Group by abstract
+  summarise(sentiment = sum(value)) %>%
+  mutate(method = "AFINN")
+
+# Combine Bing and NRC sentiments by grouping by `post_id`
+sentiment_bing_nrc <- bind_rows(sentiment_bing, sentiment_nrc) %>%
+  group_by(method, post_id, post_title) %>%               # Group by sentiment method and article
+  count(sentiment) %>%                     # Count occurrences of each sentiment
+  spread(sentiment, n, fill = 0) %>%       # Convert to wide format (positive/negative)
+  mutate(sentiment = positive - negative)  # Calculate net sentiment
+
+
+# Combine all sentiments (AFINN, Bing, NRC) into one dataset
+sentiments_combined <- bind_rows(
+  sentiment_afinn,         # Ensure AFINN is grouped by pmid
+  sentiment_bing_nrc %>% select(post_id, post_title, sentiment, method)  # Select consistent columns
+)
+
+# Plot the sentiments for each lexicon (method)
+ggplot(sentiments_combined, aes(x = as.factor(post_id), y = sentiment, fill = method)) +
+  geom_col(show.legend = FALSE) +                 # Use columns to represent sentiment scores
+  facet_wrap(~method, ncol = 1, scales = "free_y") +  # Facet by sentiment method
+  labs(title = "Sentiment Analysis by Lexicon",
+       x = "Subreddit post (post id)",
+       y = "Net Sentiment Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),            # Hide x-axis labels for clarity
+        axis.ticks.x = element_blank())           # Remove x-axis ticks
+
+# All three lexicons agree on the overall trends in sentiment.
+# The sentiment scores are relatively balanced, with a mix of positive and negative sentiments
+
+
 
 
