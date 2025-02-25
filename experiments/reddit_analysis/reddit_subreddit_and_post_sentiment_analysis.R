@@ -92,16 +92,6 @@ fear_words <- tokenized_posts %>%
 # View the most common fear words
 print(head(fear_words, 10))
 
-# A tibble: 10 × 2
-# word            n
-# <chr>       <int>
-# 1 suspect       206
-# 2 devastating   167
-# 3 harmful       167
-# 4 worse         167
-# 5 bomb          103
-# 6 change        103
-
 # These words show a negative sentiment. The words are associated with fear and negative emotions.
 
 
@@ -113,7 +103,7 @@ sentiment_bing <- tokenized_posts %>%
 
 # Count positive and negative words for each post
 post_sentiment <- sentiment_bing %>%
-  group_by(subreddit, post_id, post_title, post_body) %>%                  # Group by post (identified by post_title)
+  group_by(subreddit, post_id, post_title) %>%  # Group by post (identified by post_title)
   count(sentiment) %>%                # Count positive and negative words
   spread(sentiment, n, fill = 0) %>%  # Convert to wide format
   mutate(sentiment = positive - negative)  # Calculate net sentiment
@@ -126,7 +116,7 @@ print(head(post_sentiment))
 # Filter the posts with the most negative sentiments in decending order
 most_negative <- post_sentiment %>%
   arrange(sentiment) %>%  # Sort by sentiment
-  select(post_id, post_title, sentiment)  # Select the post_id, post_title and sentiment
+  select(subreddit, post_id, post_title, sentiment)  # Select the post_id, post_title and sentiment
 
 # shorten post title so it fits on the graph
 most_negative %>%
