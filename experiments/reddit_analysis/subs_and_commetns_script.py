@@ -154,6 +154,12 @@ if __name__ == '__main__':
 
 ### Unused functions ###
 
+# New to do:
+# 1. Check if subreddit is relevant to isotretinoin or accutane - we will do this by only using relevant subreddits.
+#    - Not sure how i will do this yet but thinking that i will filter through imported list and only use those that are relevant.
+#    - by manually selecting them. maybe dataframe.drop() or something like that.
+#    - Or could filter through posts after to check that they are relevant?
+
 # def check_subreddit(subreddit_name):
 #     subreddit = reddit.subreddit(subreddit_name)
 #     pattern = fr'\b{subreddit_name}\b'
