@@ -49,11 +49,46 @@ df_combined <- data %>%
 # View the result
 head(df_combined)
 
+# Looks great. I now need to drop posts with no comments, since they wont be of as 
+# much use as pots with comments
+df_combined <- df_combined %>%
+  filter(comments_combined != "No comments")
+
 # So far, i have the sentiment score for each individual post. Each post had a combined
 # sentiment score. I would now like to see the total sentiment for each subreddit,
 # based on the sentiment of the posts in that subreddit only.
 
+# Later i will make a script to create a dataframe that combines the posts comments 
+# sentiment scores with the posts themselves. This will allow me to see the overall 
+# sentiment of the posts and subreddits and assess if comments match to posts.
 
+#############################################################################
+#       Tokenize the posts into words and perform sentiment analysis     #
+#############################################################################
+
+# Tokenize the posts into words
+tokenized_posts <- df_combined %>%
+  unnest_tokens(output = word, input = post_body)  # Tokenize the comments into words
+
+# View the tokenized data
+print(head(tokenized_comments))
+
+### NRC lexicon sentiment analysis ###
+sentiment_nrc <- tokenized_posts %>%
+  inner_join(nrc %>% filter(sentiment %in% c("positive", "negative")), by = "word") %>%
+  mutate(method = "NRC")
+
+# Filter the NRC lexicon for words associated with "fear"
+nrc_fear <- nrc %>%
+  filter(sentiment == "fear")
+
+# Find the most common "fear" words in the comments
+fear_words <- tokenized_posts %>%
+  inner_join(nrc_fear, by = "word") %>%  # Join with fear words
+  count(word, sort = TRUE)              # Count occurrences
+
+# View the most common fear words
+print(head(fear_words, 10))
 
 
 
