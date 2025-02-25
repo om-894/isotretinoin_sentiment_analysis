@@ -115,23 +115,23 @@ if __name__ == '__main__':
 
     try:
         dataframe = pd.read_csv("data-raw/isotret_subreddits.csv")
-        subreddit_list = dataframe['subreddit'].dropna().tolist()[:5]  # Process only first 5 subreddits for now
+        subreddit_list = dataframe['subreddit'].dropna().tolist()  # Process as many subreddits as possible
         all_data = []
         
         for subreddit_name in subreddit_list:
             print(f"Fetching data from r/{subreddit_name}...")
-            posts_and_comments = get_posts_and_comments(reddit, subreddit_name, limit=5)
+            posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=10)
             # posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=10)
             if posts_and_comments:
-                write_to_csv(posts_and_comments, f'{subreddit_name}_reddit_posts.csv')
-                print(f"Saved {subreddit_name}_reddit_posts.csv")
+                # write_to_csv(posts_and_comments, f'{subreddit_name}_reddit_posts.csv')
+                # print(f"Saved {subreddit_name}_reddit_posts.csv")
                 all_data.extend(posts_and_comments)  # Store all data for combined CSV
             else:
                 print(f"No data retrieved for r/{subreddit_name}")
         
         # Write combined file with all subreddits
         if all_data:
-            write_to_csv(all_data, 'all_subreddits_reddit_posts.csv')
+            write_to_csv(all_data, 'all_subreddits_reddit_posts_possible.csv')
             print("Saved all_subreddits_reddit_posts.csv")
     except Exception as e:
         print(f"Error reading subreddit list: {e}")
@@ -147,6 +147,8 @@ if __name__ == '__main__':
 # 2. add column for subreddit name
 # 3. new data folder for each individual subreddit
 # 4. find and filter for most popular posts for each subreddit (n=10)
+#    - Forget this, though script has been altered to do this which is good. 
+#    - It would be better to filter for posts relevant to isotretinoin or accutane
 # 5. test the limits on how many posts can be retrieved
 # 6. Sentiment analysis on each comment?
 
