@@ -46,13 +46,15 @@ data <- data %>%
   filter(post_body != "NA")  # Drop posts with no post_body
 
 # I want to also keep the title of the post and the subreddit that it belongs to. 
-# Combine comments for each post_id and keep the post title and text
-df_combined <- data %>%
-  group_by(subreddit, post_id, post_title) %>%  # Keep post id, title and text
-  summarise(post_body = paste(post_body, collapse = " "), .groups = "drop")
+# i need to drop the comments column.
+
+# The posts repeat themselves, so also only have one of each post.
+df_posts <- data %>%
+  select(subreddit, post_id, post_title, post_body) %>%  # Keep required columns
+  distinct(post_body, .keep_all = TRUE)  # Remove duplicate posts
 
 # View the result
-head(df_combined)
+head(df_posts)
 
 # So far, i have the sentiment score for each individual post. Each post had a combined
 # sentiment score. I would now like to see the total sentiment for each subreddit,
@@ -67,7 +69,7 @@ head(df_combined)
 #############################################################################
 
 # Tokenize the posts into words
-tokenized_posts <- df_combined %>%
+tokenized_posts <- df_posts %>%
   unnest_tokens(output = word, input = post_body)  # Tokenize the comments into words
 
 # View the tokenized data
