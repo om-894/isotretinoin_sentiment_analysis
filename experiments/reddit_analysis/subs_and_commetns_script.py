@@ -116,8 +116,12 @@ if __name__ == '__main__':
     try:
         dataframe = pd.read_csv("data-raw/isotret_subreddits.csv")
         subreddit_list = dataframe['subreddit'].dropna().tolist()  # Process as many subreddits as possible
+        keywords = ['Accutane', 'accutane', 'isotretinoin', 'Isotretinoin']
+        # filtered_subreddits = [sub for sub in retrieved_subreddits if any(keyword in sub for keyword in keywords)]
+
         all_data = []
         
+        # for subreddit_name in filtered_subreddits:
         for subreddit_name in subreddit_list:
             print(f"Fetching data from r/{subreddit_name}...")
             posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=10)
@@ -159,8 +163,6 @@ if __name__ == '__main__':
 #    - Not sure how i will do this yet but thinking that i will filter through imported list and only use those that are relevant.
 #    - by manually selecting them. maybe dataframe.drop() or something like that.
 #    - Or could filter through posts after to check that they are relevant?
-
-# filtered_subreddits = [sub for sub in retrieved_subreddits if any(keyword in sub for keyword in ['Accutane', 'accutane', 'isotretinoin', 'Isotretinoin'])]
 
 # def check_subreddit(subreddit_name):
 #     subreddit = reddit.subreddit(subreddit_name)
