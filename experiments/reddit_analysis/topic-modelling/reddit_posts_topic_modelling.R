@@ -1,4 +1,13 @@
 
+library(tidytext)     # For text mining with tidy data principles
+library(dplyr)        # For data manipulation
+library(stringr)      # For string operations
+library(tidyr)        # For data tidying
+library(ggplot2)      # For data visualization
+library(wordcloud)    # For creating word clouds
+library(reshape2)     # For reshaping data
+library(scales)       # For scaling in plots
+library(readr)        # For reading data
 
 # Topic modeling is a method of unsupervised classification of documents, similar to 
 ## clustering, which finds natural groups of items. Latent Dirichlet allocation (LDA)
@@ -16,17 +25,10 @@
 ## may have president, congress, and government as common words in politics
 ## and movies, television, and actor in entertainment, but budget in both
 
-# get the AP dataset
+# get the Reddit posts and comments dataset
 
-library(topicmodels)
+data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts.csv")
 
-data("AssociatedPress")
-AssociatedPress
-
-# Use LDA() function from topicmodels package, setting k = 2 to create a 2-topic LDA model
-# set a seed so that the output of the model is predictable
-ap_lda <- LDA(AssociatedPress, k = 2, control = list(seed = 1234))
-ap_lda
 
 # Notes that fitting the model is the easy part - now need to explore and interpret the 
 ## model using the tidy approach
@@ -35,10 +37,8 @@ ap_lda
 
 # Use tidy() from tidytext to extract per-topic-per-word probabilities from the model
 
-library(tidytext)
-
-ap_topics <- tidy(ap_lda, matrix = "beta")
-ap_topics
+reddit_topics <- tidy(ap_lda, matrix = "beta")
+head(reddit_topics)
 
 # For each topic-term combination, the model copmutes the probability of that term being
 ## generated from that topic.
@@ -46,10 +46,7 @@ ap_topics
 # Can use dplyr's top_n() to find the 10 terms that are most common within each topic and
 ## then visualize with ggplot2
 
-library(ggplot2)
-library(dplyr)
-
-ap_top_terms <- ap_topics %>%
+ap_top_terms <- reddit_topics %>%
   group_by(topic) %>%
   top_n(10, beta) %>%
   ungroup() %>%
