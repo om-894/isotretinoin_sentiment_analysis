@@ -135,8 +135,8 @@ if __name__ == '__main__':
         
         # Write combined file with all subreddits
         if all_data:
-            write_to_csv(all_data, 'filtered_subreddits_reddit_posts_possible.csv')
-            print("Saved filtered_subreddits_reddit_posts_possible.csv")
+            write_to_csv(all_data, 'all_subreddits_reddit_posts.csv')
+            print("Saved all_subreddits_reddit_posts.csv")
     except Exception as e:
         print(f"Error reading subreddit list: {e}")
 
@@ -163,6 +163,7 @@ if __name__ == '__main__':
 #    - Not sure how i will do this yet but thinking that i will filter through imported list and only use those that are relevant.
 #    - by manually selecting them. maybe dataframe.drop() or something like that.
 #    - Or could filter through posts after to check that they are relevant?
+# 2. Add in a counter mechanism to see how many posts are being retrieved from each subreddit.
 
 # DOES THE COMMENT SENTIMENT MATCH THE POST SENTIMENT?
 
