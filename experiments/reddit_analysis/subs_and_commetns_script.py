@@ -160,6 +160,8 @@ if __name__ == '__main__':
 #    - by manually selecting them. maybe dataframe.drop() or something like that.
 #    - Or could filter through posts after to check that they are relevant?
 
+# filtered_subreddits = [sub for sub in retrieved_subreddits if any(keyword in sub for keyword in ['Accutane', 'accutane', 'isotretinoin', 'Isotretinoin'])]
+
 # def check_subreddit(subreddit_name):
 #     subreddit = reddit.subreddit(subreddit_name)
 #     pattern = fr'\b{subreddit_name}\b'
