@@ -136,7 +136,7 @@ if __name__ == '__main__':
         # Write combined file with all subreddits
         if all_data:
             write_to_csv(all_data, 'filtered_subreddits_reddit_posts_possible.csv')
-            print("Saved filtered_subreddits_reddit_posts.csv")
+            print("Saved filtered_subreddits_reddit_posts_possible.csv")
     except Exception as e:
         print(f"Error reading subreddit list: {e}")
 
