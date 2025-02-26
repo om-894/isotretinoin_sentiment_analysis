@@ -258,3 +258,82 @@ subreddit_sentiment %>%
 # ggsave("figures/reddit_subreddit_sentiments.png")
 
 
+#### Analyzing Units Beyond Just Words ####
+# Tokenize text into sentences or chapters
+
+# Tokenize posts into sentences
+pandp_sentences <- data_frame(text = pride_prejudice$word) %>%
+  unnest_tokens(sentence, text, token = "sentences")
+
+# View a sample sentence
+print(pandp_sentences$sentence[2])
+
+# Tokenize the books into chapters using a regex pattern
+austen_chapters <- austen_books() %>%
+  group_by(book) %>%
+  unnest_tokens(chapter, text, token = "regex",
+                pattern = "Chapter|CHAPTER [\\dIVXLC]") %>%  # Split text at chapter headings
+  ungroup()
+
+# Count the number of chapters per book
+chapter_counts <- austen_chapters %>%
+  group_by(book) %>%
+  summarise(chapters = n())
+
+# View the chapter counts
+print(chapter_counts)
+
+## # A tibble: 6 × 2
+##                  book chapters
+##                <fctr>    <int>
+## 1 Sense & Sensibility       51
+## 2   Pride & Prejudice       62
+## 3      Mansfield Park       49
+## 4                Emma       56
+## 5    Northanger Abbey       32
+## 6          Persuasion       25
+
+# Analyze sentiment per chapter
+# Get negative words from the Bing lexicon
+bing_negative <- bing %>%
+  filter(sentiment == "negative")
+
+# Calculate total words per chapter
+word_counts <- tidy_books %>%
+  group_by(book, chapter) %>%
+  summarise(total_words = n())
+
+# Calculate negative words per chapter
+negative_counts <- tidy_books %>%
+  semi_join(bing_negative, by = "word") %>%  # Keep only negative words
+  group_by(book, chapter) %>%
+  summarise(negative_words = n())
+
+# Combine word counts and negative counts
+negative_ratio <- left_join(negative_counts, word_counts, by = c("book", "chapter")) %>%
+  mutate(ratio = negative_words / total_words)  # Calculate ratio of negative words
+
+# Find the chapter with the highest ratio of negative words in each book
+highest_negative <- negative_ratio %>%
+  filter(chapter != 0) %>%          # Exclude chapters labeled as 0 (e.g., introductions)
+  group_by(book) %>%
+  top_n(1, ratio) %>%               # Get the chapter with the highest negative ratio
+  ungroup()
+
+# View the chapters with the highest negativity
+print(highest_negative)
+
+## # A tibble: 6 × 5
+##                  book chapter negativewords words      ratio
+##                <fctr>   <int>         <int> <int>      <dbl>
+## 1 Sense & Sensibility      43           161  3405 0.04728341
+## 2   Pride & Prejudice      34           111  2104 0.05275665
+## 3      Mansfield Park      46           173  3685 0.04694708
+## 4                Emma      15           151  3340 0.04520958
+## 5    Northanger Abbey      21           149  2982 0.04996647
+## 6          Persuasion       4            62  1807 0.03431101
+
+# What is happening in these chapters? In Chapter 43 of Sense and Sensibility, 
+# Marianne is seriously ill, near death; and in Chapter 34 of Pride and Prejudice, 
+# Mr. Darcy proposes for the first time (so badly!).
+
