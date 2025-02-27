@@ -145,7 +145,7 @@ if __name__ == '__main__':
 # https://www.reddit.com/r/AccutaneDamage/comments/fwmkhc/response_to_did_accutane_cause_my_health_issues/
 
 
-# To do:
+# DONE:
 # 1. combine all subreddits into one file (but do this additionally to having them separate 
 # - so i can compare sentiments between subreddits)
 # 2. add column for subreddit name
