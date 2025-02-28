@@ -118,11 +118,17 @@ ggplot(perplexities, aes(x = k, y = perplexity)) +
        x = "Number of Topics (k)",
        y = "Perplexity")
 
+# Based on perplexity scores, the model with 3 topics seems to be the best choice
+# While the perplexity continues to decrease after 5 topics, the rate of improvement 
+# becomes much more gradual
+
+# We will assess the differences between using 4 and 5 topics.
+
 # Fit an LDA model -------------------------------------------------------------
 
 # Use LDA() function from topicmodels package, setting k = 3 to create a 3-topic LDA model
 # set a seed so that the output of the model is predictable
-reddit_lda <- LDA(df_dtm, k = 3, control = list(seed = 1234))
+reddit_lda <- LDA(df_dtm, k = 4, control = list(seed = 1234))
 
 # Notes that fitting the model is the easy part - now need to explore and interpret the 
 ## model using the tidy approach
@@ -132,7 +138,6 @@ reddit_lda <- LDA(df_dtm, k = 3, control = list(seed = 1234))
 # Use tidy() from tidytext to extract per-topic-per-word probabilities from the model
 reddit_topics <- tidy(reddit_lda, matrix = "beta")
 
-head(reddit_topics)
 
 # For each topic-term combination, the model copmutes the probability of that term being
 ## generated from that topic.
@@ -146,9 +151,11 @@ reddit_top_terms <- reddit_topics %>%
   ungroup() %>%
   arrange(topic, -beta)
 
+# Create interactive visualization of top terms
 reddit_top_terms %>%
-  mutate(term = reorder_within(term, beta, topic)) %>%  # Reorder terms within each topic 
-  ggplot(aes(x = term, y = beta, fill = factor(topic))) +
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(x = term, y = beta, fill = factor(topic), 
+             text = paste("Term:", term, "\nBeta:", round(beta, 4)))) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free") +
   coord_flip() +
@@ -170,8 +177,25 @@ reddit_top_terms %>%
 # Topic 3 (Blue): Appears to be about side effects and treatment outcomes, with 
 # terms like "accutane," "effects," "drug," "pain," and "issues."
 
-# Looking at the grpahs, i need to make a custom stop word list to get rid of 
-# words like 'it's', 'https', 'i'm' etc..
+
+# Analyze document-topic probabilities (Gamma) ---------------------------------
+
+doc_topics <- tidy(reddit_lda, matrix = "gamma")
+
+# Document-topic distribution summary
+doc_topic_distribution <- doc_topics %>%
+  group_by(topic) %>%
+  summarise(mean_gamma = mean(gamma),
+            sd_gamma = sd(gamma)) %>%
+  arrange(desc(mean_gamma))
+
+# Visualize document-topic distribution
+ggplot(doc_topics, aes(gamma)) +
+  geom_histogram(bins = 50) +
+  facet_wrap(~topic, ncol = 2) +
+  labs(title = "Distribution of document probabilities for each topic",
+       x = "Probability (gamma)",
+       y = "Count")
 
 
 
