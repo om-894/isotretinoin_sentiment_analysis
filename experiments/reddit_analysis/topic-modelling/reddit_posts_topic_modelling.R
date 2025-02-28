@@ -99,12 +99,30 @@ df_dtm <- df_tokens %>%
   count(post_id, word, sort = TRUE) %>%
   cast_dtm(document = post_id, term = word, value = n)
 
+# Assess different numbers of topics -------------------------------------------
+
+# Try different numbers of topics for model selection
+k_values <- c(2, 3, 4, 5, 6, 7, 8, 9, 10)
+perplexities <- data.frame(k = k_values, perplexity = NA)
+
+for(i in seq_along(k_values)) {
+  model <- LDA(df_dtm, k = k_values[i], control = list(seed = 1234))
+  perplexities$perplexity[i] <- perplexity(model)
+}
+
+# Plot perplexity scores
+ggplot(perplexities, aes(x = k, y = perplexity)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Model Perplexity by Number of Topics",
+       x = "Number of Topics (k)",
+       y = "Perplexity")
+
 # Fit an LDA model -------------------------------------------------------------
 
-# Use LDA() function from topicmodels package, setting k = 5 to create a 2-topic LDA model
+# Use LDA() function from topicmodels package, setting k = 3 to create a 3-topic LDA model
 # set a seed so that the output of the model is predictable
 reddit_lda <- LDA(df_dtm, k = 3, control = list(seed = 1234))
-reddit_lda
 
 # Notes that fitting the model is the easy part - now need to explore and interpret the 
 ## model using the tidy approach
