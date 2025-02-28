@@ -197,7 +197,18 @@ ggplot(doc_topics, aes(gamma)) +
        x = "Probability (gamma)",
        y = "Count")
 
+# The bimodal distribution in each panel shows that documents tend to either strongly 
+# belong (probability near 1.0) or strongly not belong (probability near 0.0) to each topic
 
+# The high counts at probability near 0.0 indicate that most documents have low 
+# probability of belonging to any single topic. The smaller peaks at probability 1.0 show 
+# that some documents are strongly associated with each topic
+
+# This pattern suggests clear topic separation, where documents tend to be distinctly 
+# categorized rather than having mixed topic assignments
+
+# The similar distribution patterns across all three topics suggests relatively 
+# balanced topic assignments in the corpus
 
 
 
