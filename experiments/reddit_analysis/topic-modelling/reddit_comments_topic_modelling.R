@@ -249,9 +249,11 @@ cat("Model perplexity:", perplexity(reddit_lda), "\n")
 
 
 # Ideas:
-# Four topic model for comments
+# Three topic model for comments
 # Two topic model for posts - compare topics between posts and comments
-# Three topic model for 
+# Four topic model for abstracts
+
+# Or just use three for each. I will decide later....
 
 
 
