@@ -8,6 +8,7 @@ library(wordcloud)    # For creating word clouds
 library(reshape2)     # For reshaping data
 library(scales)       # For scaling in plots
 library(readr)        # For reading data
+library(topicmodels)  # For topic modeling
 
 # Topic modeling is a method of unsupervised classification of documents, similar to 
 ## clustering, which finds natural groups of items. Latent Dirichlet allocation (LDA)
@@ -27,8 +28,37 @@ library(readr)        # For reading data
 
 # get the Reddit posts and comments dataset
 
-data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts.csv")
+reddit_data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts.csv")
 
+
+# I want to also keep the title of the post but just combine the comments. 
+# Combine comments for each post_id and keep the post title and text
+df_combined <- reddit_data %>%
+  group_by(subreddit, post_id, post_title, post_body) %>%  # Keep post id, title and text
+  summarise(comments_combined = paste(comment, collapse = " "), .groups = "drop")
+
+
+# Tokenize the text and remove stopwords ---------------------------------------
+
+df_tokens <- df_combined %>%
+  mutate(full_text = paste(post_title, post_body, comments_combined, sep = " ")) %>%
+  unnest_tokens(word, full_text) %>%  # Tokenize the text
+  anti_join(stop_words, by = "word") %>%  # Remove stopwords
+  filter(!str_detect(word, "^[0-9]+$")) %>%
+  filter(nchar(word) > 2)
+  
+# Create a Document-Term Matrix (DTM) ------------------------------------------
+
+df_dtm <- df_tokens %>%
+  count(post_id, word, sort = TRUE) %>%
+  cast_dtm(document = post_id, term = word, value = n)
+
+# Fit an LDA model -------------------------------------------------------------
+
+# Use LDA() function from topicmodels package, setting k = 2 to create a 2-topic LDA model
+# set a seed so that the output of the model is predictable
+reddit_lda <- LDA(reddit_data, k = 2, control = list(seed = 1234))
+reddit_lda
 
 # Notes that fitting the model is the easy part - now need to explore and interpret the 
 ## model using the tidy approach
@@ -37,7 +67,7 @@ data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts
 
 # Use tidy() from tidytext to extract per-topic-per-word probabilities from the model
 
-reddit_topics <- tidy(ap_lda, matrix = "beta")
+reddit_topics <- tidy(data, matrix = "beta")
 head(reddit_topics)
 
 # For each topic-term combination, the model copmutes the probability of that term being
