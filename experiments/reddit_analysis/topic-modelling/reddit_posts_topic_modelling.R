@@ -9,6 +9,8 @@ library(reshape2)     # For reshaping data
 library(scales)       # For scaling in plots
 library(readr)        # For reading data
 library(topicmodels)  # For topic modeling
+library(corrplot)     # For correlation plots
+library(plotly)       # For interactive plots
 
 # Topic modeling is a method of unsupervised classification of documents, similar to 
 ## clustering, which finds natural groups of items. Latent Dirichlet allocation (LDA)
@@ -210,7 +212,34 @@ ggplot(doc_topics, aes(gamma)) +
 # The similar distribution patterns across all three topics suggests relatively 
 # balanced topic assignments in the corpus
 
+# Topic correlation analysis ---------------------------------------------------
 
+topic_correlations <- doc_topics %>%
+  spread(topic, gamma) %>%
+  select(-document) %>%
+  cor()
+
+# Visualize topic correlations
+corrplot(topic_correlations, method = "color",
+         type = "upper", order = "hclust",
+         addCoef.col = "black",
+         tl.col = "black", tl.srt = 45,
+         diag = FALSE)
+
+# This represents ......
+
+# Print top words for inspection
+top_words <- df_tokens %>%
+  count(word, sort = TRUE) %>%
+  head(50)
+
+print(top_words)
+
+# Print model summary statistics
+cat("\nModel Statistics:\n")
+cat("Number of documents:", nrow(doc_topics) / 3, "\n")
+cat("Number of terms:", ncol(df_dtm), "\n")
+cat("Model perplexity:", perplexity(reddit_lda), "\n")
 
 
 # Ideas:
