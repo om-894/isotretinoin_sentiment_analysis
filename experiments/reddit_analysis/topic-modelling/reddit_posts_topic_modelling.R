@@ -40,12 +40,58 @@ df_combined <- reddit_data %>%
 
 # Tokenize the text and remove stopwords ---------------------------------------
 
+# Additional preprocessing
 df_tokens <- df_combined %>%
   mutate(full_text = paste(post_title, post_body, comments_combined, sep = " ")) %>%
-  unnest_tokens(word, full_text) %>%  # Tokenize the text
-  anti_join(stop_words, by = "word") %>%  # Remove stopwords
+  unnest_tokens(word, full_text) %>%
+  anti_join(stop_words, by = "word") %>%
   filter(!str_detect(word, "^[0-9]+$")) %>%
-  filter(nchar(word) > 2)
+  filter(nchar(word) > 2) %>%
+  # Add these steps:
+  filter(!word %in% c("amp", "http", "https", "com", "www")) %>% # Remove common web artifacts
+  filter(!str_detect(word, "^[[:punct:]]+$")) %>% # Remove punctuation-only tokens
+  mutate(word = str_replace_all(word, "[[:punct:]]", "")) # Clean remaining punctuation
+
+
+# Create custom stop words list
+custom_stop_words <- c(
+  "it's", "i'm", "don't", "that's", "i've", "i'll", "can't", "won't",
+  "https", "http", "amp", "com", "www",
+  "im", "ive", "id", "ill", "dont", "cant", "wont", "thats",
+  "deleted", "removed", "edit", "edited",
+  "like", "just", "really", "get", "got", "going", "went",
+  "will", "would", "could", "should", "may", "might",
+  "one", "two", "three", "first", "second", "third",
+  "way", "thing", "things", "something", "anything",
+  "much", "many", "lot", "lots",
+  "said", "say", "says", "saying",
+  "know", "think", "thought", "thinking",
+  "even", "still", "also", "else",
+  "new", "old", "since", "ago",
+  "day", "days", "week", "weeks", "month", "months",
+  "want", "wanted", "wanting",
+  "make", "made", "making",
+  "use", "used", "using"
+)
+
+# Combine with built-in stop words
+all_stop_words <- bind_rows(
+  stop_words,
+  data.frame(word = custom_stop_words, lexicon = "custom")
+)
+
+# Update your tokenization code
+df_tokens <- df_combined %>%
+  mutate(full_text = paste(post_title, post_body, comments_combined, sep = " ")) %>%
+  unnest_tokens(word, full_text) %>%
+  anti_join(all_stop_words, by = "word") %>%  # Use the combined stop words
+  filter(!str_detect(word, "^[0-9]+$")) %>%  # Remove numbers
+  filter(nchar(word) > 2) %>%  # Remove short words
+  filter(!str_detect(word, "^[[:punct:]]+$")) %>%  # Remove punctuation-only tokens
+  mutate(word = str_replace_all(word, "[[:punct:]]", "")) %>%  # Clean remaining punctuation
+  filter(!str_detect(word, "^.*\\d+.*$")) %>%  # Remove tokens containing numbers
+  filter(!str_detect(word, "^[a-z]{1,2}$"))    # Remove 1-2 letter words
+
   
 # Create a Document-Term Matrix (DTM) ------------------------------------------
 
@@ -108,6 +154,8 @@ reddit_top_terms %>%
 
 # Looking at the grpahs, i need to make a custom stop word list to get rid of 
 # words like 'it's', 'https', 'i'm' etc..
+
+
 
 
 
