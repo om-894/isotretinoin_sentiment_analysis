@@ -55,19 +55,19 @@ df_dtm <- df_tokens %>%
 
 # Fit an LDA model -------------------------------------------------------------
 
-# Use LDA() function from topicmodels package, setting k = 2 to create a 2-topic LDA model
+# Use LDA() function from topicmodels package, setting k = 5 to create a 2-topic LDA model
 # set a seed so that the output of the model is predictable
-reddit_lda <- LDA(reddit_data, k = 2, control = list(seed = 1234))
+reddit_lda <- LDA(df_dtm, k = 5, control = list(seed = 1234))
 reddit_lda
 
 # Notes that fitting the model is the easy part - now need to explore and interpret the 
 ## model using the tidy approach
 
-# Word-topic probabilities ------------------------------------------------
+# Examine Topic-Term Probability (Beta) ----------------------------------------
 
 # Use tidy() from tidytext to extract per-topic-per-word probabilities from the model
+reddit_topics <- tidy(reddit_lda, matrix = "beta")
 
-reddit_topics <- tidy(data, matrix = "beta")
 head(reddit_topics)
 
 # For each topic-term combination, the model copmutes the probability of that term being
@@ -76,7 +76,7 @@ head(reddit_topics)
 # Can use dplyr's top_n() to find the 10 terms that are most common within each topic and
 ## then visualize with ggplot2
 
-ap_top_terms <- reddit_topics %>%
+reddit_top_terms <- reddit_topics %>%
   group_by(topic) %>%
   top_n(10, beta) %>%
   ungroup() %>%
