@@ -73,7 +73,7 @@ custom_stop_words <- c(
   "day", "days", "week", "weeks", "month", "months",
   "want", "wanted", "wanting",
   "make", "made", "making",
-  "use", "used", "using"
+  "use", "used", "using", "feel", "its", "pas", "taking"
 )
 
 # Combine with built-in stop words
@@ -130,7 +130,7 @@ ggplot(perplexities, aes(x = k, y = perplexity)) +
 
 # Use LDA() function from topicmodels package, setting k = 3 to create a 3-topic LDA model
 # set a seed so that the output of the model is predictable
-reddit_lda <- LDA(df_dtm, k = 4, control = list(seed = 1234))
+reddit_lda <- LDA(df_dtm, k = 3, control = list(seed = 1234))
 
 # Notes that fitting the model is the easy part - now need to explore and interpret the 
 ## model using the tidy approach
@@ -226,7 +226,13 @@ corrplot(topic_correlations, method = "color",
          tl.col = "black", tl.srt = 45,
          diag = FALSE)
 
-# This represents ......
+# The negative correlations across all topic pairs suggest that these topics are 
+# relatively distinct from each other, which is desirable in topic modeling.
+
+# The strongest distinction is between Topics 1 and 3 (-0.70), indicating these 
+# topics are most different from each other. Topics 1 and 2 show moderate distinction (-0.43)
+# Topics 2 and 3 have the weakest negative correlation (-0.35), suggesting these topics 
+# might have some overlap in content
 
 # Print top words for inspection
 top_words <- df_tokens %>%
