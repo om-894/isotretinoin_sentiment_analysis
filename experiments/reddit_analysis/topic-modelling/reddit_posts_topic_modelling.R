@@ -19,7 +19,7 @@ reddit_data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddi
 # I want to also keep the title of the post but just combine the comments. 
 # Combine comments for each post_id and keep the post title and text
 df_combined <- reddit_data %>%
-  group_by(subreddit, post_id, post_title, post_body) %>%  # Keep post id, title and text
+  group_by(subreddit, post_id, post_title, post_body) %>%  # CHANGE THIS TO post_body ONLY
   summarise(comments_combined = paste(comment, collapse = " "), .groups = "drop")
 
 # Tokenize the text and remove stopwords ---------------------------------------
