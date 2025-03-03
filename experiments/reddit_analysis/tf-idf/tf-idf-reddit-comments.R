@@ -21,3 +21,14 @@
 
 # LOW TF-IDF Score: Indicates that the term is common across documents (e.g., common stop words) 
 # or does not appear frequently in the document.
+
+# Load necessary libraries
+library(dplyr)        # For data manipulation
+library(tidytext)     # For text mining with tidy data principles
+library(ggplot2)      # For data visualization
+library(stringr)      # For string operations
+
+
+
+
+
