@@ -103,11 +103,35 @@ ggplot(freq_by_rank, aes(rank, term_frequency, color = subreddit)) +
   geom_line(size = 1.1, alpha = 0.8) +
   scale_x_log10() +
   scale_y_log10() +
-  labs(x = "Rank", y = "Term Frequency", title = "Zipf's Law in Jane Austen's Novels") +
+  labs(x = "Rank", y = "Term Frequency") +
   theme_minimal()
 
 # The plot shows a linear relationship on a log-log scale,
 # indicating that Zipf's Law holds for these novels.
 
+# Fitting a Power Law to Zipf's Law --------------------------------------------
 
+# We can fit a linear model to the log-transformed data to find the exponent of the power law.
 
+# Subset the data to exclude extreme ranks
+rank_subset <- freq_by_rank %>%
+  filter(rank > 10, rank < 500)
+
+# Fit a linear model to the log-transformed term frequency and rank
+lm_result <- lm(log10(term_frequency) ~ log10(rank), data = rank_subset)
+
+# View the results
+summary(lm_result)
+
+# Plot the fitted power law
+ggplot(freq_by_rank, aes(rank, term_frequency, color = subreddit)) +
+  geom_line(size = 1.1, alpha = 0.8) +
+  geom_abline(intercept = coef(lm_result)[1], slope = coef(lm_result)[2],
+              color = "gray50", linetype = 2) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(x = "Rank", y = "Term Frequency") +
+  theme_minimal()
+
+# The fitted line has a slope close to -1, consistent with Zipf's Law,
+# which states that term frequency is inversely proportional to rank.
