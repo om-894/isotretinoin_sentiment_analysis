@@ -39,5 +39,19 @@ df_combined <- data %>%
   group_by(post_id, post_title, post_body) %>%  # Keep post id, title and text
   summarise(comments_combined = paste(comment, collapse = " "), .groups = "drop")
 
+# Tokenize the text and remove stopwords ---------------------------------------
+
+# Tokenize the comments into words
+comment_words <- df_combined %>%
+  unnest_tokens(word, comments_combined) %>%  # Assuming the column is named 'comment_text'
+  count(word, sort = TRUE) %>%  # Count word frequencies
+  ungroup()
+
+# View word frequencies
+head(comment_words, 10)
+
+
+
+
 
 
