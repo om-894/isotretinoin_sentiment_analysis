@@ -77,8 +77,7 @@ ggplot(comment_words, aes(n / total, fill = subreddit)) +
   geom_histogram(show.legend = FALSE, bins = 30) +
   xlim(NA, 0.0009) +  # Limit x-axis to focus on common term frequencies
   facet_wrap(~subreddit, ncol = 2, scales = "free_y") +
-  labs(x = "Term Frequency (n / total words)", y = "Count") +
-  ggtitle("Term Frequency Distribution in Isotretinoin related subreddits")
+  labs(x = "Term Frequency (n / total words)", y = "Count")
 
 # The single green bar in the AccutaneDamaged subreddit frequency distribution 
 # likely indicates that this is a more focused or specialized subreddit where 
@@ -181,6 +180,39 @@ comment_words %>%
 
 # tf-idf; it identifies words that are important to one document within a 
 # collection of documents.
+
+# Removing Less Meaningful Words -----------------------------------------------
+
+# We notice that some words like "et", "al", "pubmed.ncbi.nlm.nih.gov" are artifacts 
+# or less meaningful.
+# Let's remove these words using a custom stop words list.
+
+# Create a custom stop words list
+custom_stop_words <- tibble(word = c("drive.google.com", "elta", "ms", "et", "al", 
+                                     "pubmed.ncbi.nlm.nih.gov", "ci", "uc", 
+                                     "www.accessdata.fda.gov", "youuu"))
+
+# Remove custom stop words from the data
+comment_words_clean <- comment_words %>%
+  anti_join(custom_stop_words, by = "word")
+
+# Recalculate tf-idf
+comment_words_clean <- comment_words_clean %>%
+  bind_tf_idf(word, subreddit, n)
+
+comment_words_clean %>%
+  group_by(subreddit) %>%
+  arrange(desc(tf_idf)) %>%
+  slice_max(tf_idf, n = 8) %>%  # Get top 8 words per book (doing this so graph looks better)
+  ungroup() %>%
+  mutate(word = reorder_within(word, tf_idf, subreddit)) %>%  # Reorder words within each book
+  ggplot(aes(word, tf_idf, fill = subreddit)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~subreddit, ncol = 2, scales = "free") +
+  scale_x_reordered() +
+  coord_flip() +
+  theme_minimal()
 
 
 
