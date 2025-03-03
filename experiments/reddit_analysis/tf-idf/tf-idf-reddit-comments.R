@@ -23,12 +23,21 @@
 # or does not appear frequently in the document.
 
 # Load necessary libraries
+library(tidyverse)    # For data manipulation)
 library(dplyr)        # For data manipulation
 library(tidytext)     # For text mining with tidy data principles
 library(ggplot2)      # For data visualization
 library(stringr)      # For string operations
 
 
+# Load the dataset
+data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts.csv")
+
+# I want to also keep the title of the post but just combine the comments. 
+# Combine comments for each post_id and keep the post title and text
+df_combined <- data %>%
+  group_by(post_id, post_title, post_body) %>%  # Keep post id, title and text
+  summarise(comments_combined = paste(comment, collapse = " "), .groups = "drop")
 
 
 
