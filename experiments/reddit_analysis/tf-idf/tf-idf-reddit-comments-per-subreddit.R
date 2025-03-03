@@ -48,6 +48,8 @@ comment_words <- df_combined %>%
   count(word, sort = TRUE) %>%  # Count word frequencies
   ungroup()
 
+# ADD IN REMOVAL OF STOP WORDS #
+
 # Analyzing the term frequency -------------------------------------------------
 
 # Calculate the total number of words in each subreddit
@@ -135,3 +137,57 @@ ggplot(freq_by_rank, aes(rank, term_frequency, color = subreddit)) +
 
 # The fitted line has a slope close to -1, consistent with Zipf's Law,
 # which states that term frequency is inversely proportional to rank.
+
+# Calculating tf-idf -----------------------------------------------------------
+
+# The tf-idf statistic reflects how important a word is to a document in a collection.
+# We can calculate tf-idf to find words that are important to each novel.
+
+# Use bind_tf_idf() to calculate tf, idf, and tf-idf
+comment_words <- comment_words %>%
+  bind_tf_idf(word, subreddit, n)
+
+# View the data frame with tf-idf
+comment_words
+# The data frame now includes:
+# - tf: term frequency
+# - idf: inverse document frequency
+# - tf_idf: tf-idf score
+
+# Exploring High tf-idf Words --------------------------------------------------
+
+# Let's look at the words with the highest tf-idf scores in each subreddit.
+
+# View the words with highest tf-idf across all books
+comment_words %>%
+  select(-total) %>%
+  arrange(desc(tf_idf))
+
+# We can visualize the top 15 words with the highest tf-idf for each book.
+
+comment_words %>%
+  group_by(subreddit) %>%
+  arrange(desc(tf_idf)) %>%
+  slice_max(tf_idf, n = 8) %>%  # Get top 8 words per book (doing this so graph looks better)
+  ungroup() %>%
+  mutate(word = reorder_within(word, tf_idf, subreddit)) %>%  # Reorder words within each book
+  ggplot(aes(word, tf_idf, fill = subreddit)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf", title = "Highest tf-idf Words in Jane Austen's Novels") +
+  facet_wrap(~subreddit, ncol = 2, scales = "free") +
+  scale_x_reordered() +
+  coord_flip() +
+  theme_minimal()
+
+# tf-idf; it identifies words that are important to one document within a 
+# collection of documents.
+
+
+
+
+
+
+
+
+
+
