@@ -36,20 +36,27 @@ data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts
 # I want to also keep the title of the post but just combine the comments. 
 # Combine comments for each post_id and keep the post title and text
 df_combined <- data %>%
-  group_by(post_id, post_title, post_body) %>%  # Keep post id, title and text
+  group_by(subreddit, post_id, post_title, post_body) %>%  # Keep post id, title and text
   summarise(comments_combined = paste(comment, collapse = " "), .groups = "drop")
 
 # Tokenize the text and remove stopwords ---------------------------------------
 
 # Tokenize the comments into words
 comment_words <- df_combined %>%
+  group_by(subreddit) %>%
   unnest_tokens(word, comments_combined) %>%  # Assuming the column is named 'comment_text'
   count(word, sort = TRUE) %>%  # Count word frequencies
   ungroup()
 
-# View word frequencies
-head(comment_words, 10)
+# Analyzing the term frequency -------------------------------------------------
 
+# Calculate the total number of words in each subreddit
+total_subreddit_words <- comment_words %>%
+  group_by(subreddit) %>%
+  summarize(total = sum(n))
+
+# Join the total word counts to the word counts data frame
+comment_words <- left_join(comment_words, total_subreddit_words, by = "subreddit")
 
 
 
