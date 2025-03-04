@@ -49,6 +49,9 @@ bigram_counts <- bigrams_filtered %>%
 bigrams_united <- bigrams_filtered %>%
   unite(bigram, word1, word2, sep = " ")
 
+# Plot most common bigrams
+
+
 # Analysing Trigrams -----------------------------------------------------------
 
 comment_trigrams <- df_combined %>%
@@ -59,6 +62,42 @@ comment_trigrams <- df_combined %>%
          !word2 %in% stop_words$word,
          !word3 %in% stop_words$word) %>%
   count(word1, word2, word3, sort = TRUE)
+
+# Analyzing Bigrams ------------------------------------------------------------
+
+# Calculate tf-idf for bigrams
+bigram_tf_idf <- bigrams_united %>%
+  count(subreddit, bigram) %>%
+  bind_tf_idf(bigram, subreddit, n) %>%
+  arrange(desc(tf_idf))
+
+# Plotting the highest tf-idf bigrams for each book
+bigram_tf_idf %>%
+  group_by(subreddit) %>%
+  slice_max(tf_idf, n = 7, with_ties = FALSE) %>%
+  ungroup %>%
+  mutate(bigram = reorder(bigram, tf_idf)) %>%
+  ggplot(aes(bigram, tf_idf, fill = subreddit)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~subreddit, ncol = 2, scales = "free") +
+  coord_flip()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
