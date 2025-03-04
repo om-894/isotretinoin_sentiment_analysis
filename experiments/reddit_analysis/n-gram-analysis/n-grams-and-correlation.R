@@ -175,6 +175,30 @@ negated_words %>%
 # Figure 4-3. The most common positive or negative words to follow negations such 
 # as “never,” “no,” “not,” and “without”
 
+# Counting and Correlating Pairs of Words with the widyr Package ---------------
+
+# Tokenizing by n-grams allows exploration of adjacent word pairs,
+# but sometimes we're interested in co-occurring words within a broader context
+# (e.g., within documents or chapters) even if they are not adjacent.
+
+# Counting and Correlating Among Sections --------------------------------------
+
+# Prepare the data
+accutane_post_words <- df_combined %>%
+  filter(subreddit == "Accutane") %>%
+  # Number each post from 1 onwards
+  mutate(post_num = row_number()) %>%
+  unnest_tokens(word, comments_combined) %>%
+  filter(!word %in% stop_words$word)
+
+# Count word pairs co-occurring within the same section
+word_pairs <- accutane_post_words %>%
+  pairwise_count(word, post_num, sort = TRUE)
+
+# Examine the words most often appearing with "darcy"
+word_pairs %>%
+  filter(item1 == "progress")
+
 
 
 
