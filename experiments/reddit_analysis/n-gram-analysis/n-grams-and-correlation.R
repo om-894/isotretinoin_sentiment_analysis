@@ -45,8 +45,20 @@ bigrams_filtered <- bigrams_separated %>%
 bigram_counts <- bigrams_filtered %>%
   count(word1, word2, sort = TRUE)
 
-bigram_counts
+# Unite the filtered bigrams back into a single column
+bigrams_united <- bigrams_filtered %>%
+  unite(bigram, word1, word2, sep = " ")
 
+# Analysing Trigrams -----------------------------------------------------------
+
+comment_trigrams <- df_combined %>%
+  unnest_tokens(trigram, comments_combined, token = "ngrams", n = 3) %>%
+  group_by(subreddit, post_body) %>%
+  separate(trigram, c("word1", "word2", "word3"), sep = " ") %>%
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word,
+         !word3 %in% stop_words$word) %>%
+  count(word1, word2, word3, sort = TRUE)
 
 
 
