@@ -83,6 +83,53 @@ bigram_tf_idf %>%
   facet_wrap(~subreddit, ncol = 2, scales = "free") +
   coord_flip()
 
+# Removing Less Meaningful Words -----------------------------------------------
+
+# We notice that some words like "et", "al", "pubmed.ncbi.nlm.nih.gov" are artifacts 
+# or less meaningful.
+# Let's remove these words using a custom stop words list.
+
+bigrams_united_clean <- bigrams_united %>%
+  filter(
+    # Remove URLs and web references
+    !str_detect(bigram, "^https?|www\\.|\\.com|\\.gov|\\.edu|\\.org"),
+    # Remove file references, numbers, and alphanumeric codes
+    !str_detect(bigram, "\\d{4}[a-z0-9]+|file\\s|sheet\\s|\\d+\\s*[a-z0-9]+|[a-z0-9]+\\s*\\d+"),
+    # Remove academic reference patterns
+    !str_detect(bigram, "article|abstract|doi|pii|^et al|\\sci\\s"),
+    # Remove specific patterns you mentioned
+    !str_detect(bigram, "isotretinoin https")
+  )
+
+# Create a custom stop words list to remove ones that regex could not remove
+custom_stop_words <- tibble(bigram = c("drive.google.com", "elta", "ms", "et", "al", 
+                                       "pubmed.ncbi.nlm.nih.gov", "ci", "uc", 
+                                       "www.accessdata.fda.gov", "youuu"))
+
+# Remove custom stop words from the data
+bigrams_united_clean <- bigrams_united_clean %>%
+  anti_join(custom_stop_words, by = "bigram")
+
+# Calculate tf-idf for bigrams
+bigram_tf_idf <- bigrams_united_clean %>%
+  count(subreddit, bigram) %>%
+  bind_tf_idf(bigram, subreddit, n) %>%
+  arrange(desc(tf_idf))
+
+# Plotting the highest tf-idf bigrams for each book
+bigram_tf_idf %>%
+  group_by(subreddit) %>%
+  slice_max(tf_idf, n = 7, with_ties = FALSE) %>%
+  ungroup %>%
+  mutate(bigram = reorder(bigram, tf_idf)) %>%
+  ggplot(aes(bigram, tf_idf, fill = subreddit)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~subreddit, ncol = 2, scales = "free") +
+  coord_flip()
+# Figure looks good and regex has worked well. I will manually remove the remaining
+# artifacts and less meaningful words myself at a later date.
+
 
 
 
