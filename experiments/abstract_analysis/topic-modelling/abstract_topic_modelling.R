@@ -42,26 +42,21 @@ abstracts_data <- data %>%
 # in 2006.This woulkd address the question of whether the introduction of iPLEDGE had an 
 # impact on the number of articles published on isotretinoin and a fair timeframe comparison 
 # with Reddit.
+# Hypothesis: would expect a rise in words such as pregnancy, teratogenic, iPLEDGE, etc.
+# Hypothesis: More overall worry and bad stigma about accutane/isotretinoin in socail media 
+# posts compared to papers post-2006. Does social media affect papers before and after 2006?
 
 # Split the data into two data frames based on the year
 abstracts_data_pre_2006 <- abstracts_data %>%
   filter(year <= 2006)
 
+abstracts_data_post_2006 <- abstracts_data %>%
+  filter(year > 2006)
+
+# Make sure to still analyse all 3 dataframes. MOVE THIS TO AFTER TOKENIZATION
+
 
 # Tokenize the text and remove stopwords from both dataframes ------------------
-
-# Additional preprocessing
-df_tokens <- df_combined %>%
-  mutate(full_text = paste(post_title, post_body, comments_combined, sep = " ")) %>%
-  unnest_tokens(word, full_text) %>%
-  anti_join(stop_words, by = "word") %>%
-  filter(!str_detect(word, "^[0-9]+$")) %>%
-  filter(nchar(word) > 2) %>%
-  # Add these steps:
-  filter(!word %in% c("amp", "http", "https", "com", "www")) %>% # Remove common web artifacts
-  filter(!str_detect(word, "^[[:punct:]]+$")) %>% # Remove punctuation-only tokens
-  mutate(word = str_replace_all(word, "[[:punct:]]", "")) # Clean remaining punctuation
-
 
 # Create custom stop words list
 custom_stop_words <- c(
@@ -91,8 +86,8 @@ all_stop_words <- bind_rows(
 )
 
 # Update your tokenization code
-df_tokens <- df_combined %>%
-  mutate(full_text = paste(post_title, post_body, comments_combined, sep = " ")) %>%
+df_tokens <- abstracts_data %>%
+  mutate(full_text = paste(title, abstract, sep = " ")) %>%
   unnest_tokens(word, full_text) %>%
   anti_join(all_stop_words, by = "word") %>%  # Use the combined stop words
   filter(!str_detect(word, "^[0-9]+$")) %>%  # Remove numbers
@@ -102,6 +97,36 @@ df_tokens <- df_combined %>%
   filter(!str_detect(word, "^.*\\d+.*$")) %>%  # Remove tokens containing numbers
   filter(!str_detect(word, "^[a-z]{1,2}$"))    # Remove 1-2 letter words
 
+# Create a Document-Term Matrix (DTM) ------------------------------------------
+
+df_dtm <- df_tokens %>%
+  count(title, word, sort = TRUE) %>%
+  cast_dtm(document = title, term = word, value = n)
+
+# Assess different numbers of topics -------------------------------------------
+
+# Try different numbers of topics for model selection
+k_values <- c(2, 3, 4, 5, 6, 7, 8, 9, 10)
+perplexities <- data.frame(k = k_values, perplexity = NA)
+
+for(i in seq_along(k_values)) {
+  model <- LDA(df_dtm, k = k_values[i], control = list(seed = 1234))
+  perplexities$perplexity[i] <- perplexity(model)
+}
+
+# Plot perplexity scores
+ggplot(perplexities, aes(x = k, y = perplexity)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Model Perplexity by Number of Topics",
+       x = "Number of Topics (k)",
+       y = "Perplexity")
+
+# Based on perplexity scores, the model with 3 topics seems to be the best choice
+# While the perplexity continues to decrease after 5 topics, the rate of improvement 
+# becomes much more gradual
+
+# We will assess the differences between using 4 and 5 topics.
 
 
 
