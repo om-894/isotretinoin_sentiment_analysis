@@ -76,6 +76,7 @@ bigrams_united_counts %>%
     axis.text = element_text(size = 10),
     plot.title = element_text(size = 12)
   )
+# MAKE IT GREYSCALE!!
 
 # Analysing Trigrams -----------------------------------------------------------
 
