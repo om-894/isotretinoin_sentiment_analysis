@@ -105,6 +105,9 @@ df_dtm <- df_tokens %>%
 
 # Assess different numbers of topics -------------------------------------------
 
+# This section takes a while to run, so can skip running if need be.
+# based on the graph, 4 or 5 topics seems the best k value to use.
+
 # Try different numbers of topics for model selection
 k_values <- c(2, 3, 4, 5, 6, 7, 8, 9, 10)
 perplexities <- data.frame(k = k_values, perplexity = NA)
