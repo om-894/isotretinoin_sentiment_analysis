@@ -131,6 +131,16 @@ ggplot(perplexities, aes(x = k, y = perplexity)) +
 
 # We will assess the differences between using 4 and 5 topics.
 
+# Fit an LDA model -------------------------------------------------------------
+
+# Use LDA() function from topicmodels package, setting k = 4 to create a 4-topic LDA model
+# set a seed so that the output of the model is predictable and the same seed as reddit analysis
+# This will take a few seconds to run
+abstract_lda <- LDA(df_dtm, k = 4, control = list(seed = 1234))
+
+# Notes that fitting the model is the easy part - now need to explore and interpret the 
+## model using the tidy approach
+
 
 
 
