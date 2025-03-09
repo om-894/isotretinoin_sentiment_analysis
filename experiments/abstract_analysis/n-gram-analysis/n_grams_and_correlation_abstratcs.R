@@ -237,19 +237,26 @@ negated_words %>%
 
 # Counting and Correlating Among Sections --------------------------------------
 
-# Prepare the data
+# 1. Prepare the data
 accutane_abstract_words <- abstracts_data %>%
   filter(period == "2006 and later") %>%
-  # Number each post from 1 onwards
-  mutate(post_num = row_number()) %>%
   unnest_tokens(word, abstract) %>%
   filter(!word %in% stop_words$word)
 
-# Count word pairs co-occurring within the same section
-word_pairs <- accutane_abstract_words %>%
-  pairwise_count(word, period, sort = TRUE)
+# 2. Split into chunks of 1000 words
+chunk_size <- 1000
+chunks <- split(accutane_abstract_words, 
+                ceiling(seq_len(nrow(accutane_abstract_words))/chunk_size))
 
-# Examine the words most often appearing with "darcy"
+# 3. Process chunks and combine
+word_pairs <- map_df(chunks, function(chunk) {
+  chunk %>% pairwise_count(word, period, sort = TRUE)
+}) %>%
+  group_by(item1, item2) %>%
+  summarise(n = sum(n), .groups = 'drop') %>%
+  arrange(desc(n))
+
+# 4. Examine words appearing with "acne"
 word_pairs %>%
-  filter(item1 == "progress")
+  filter(item1 == "isotretinoin")
 
