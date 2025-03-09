@@ -233,6 +233,14 @@ custom_stop_words <- bind_rows(
   stop_words                                               # Combine with the standard stop word list
 )
 
+
+# Plot sentiments for each post, being a combination of comment and post sentiment
+# Do this for each of the 6 subreddits.
+
+
+
+
+
 #### Creating Word Clouds ####
 # Visualize the most common words using word clouds
 
