@@ -141,6 +141,39 @@ abstract_lda <- LDA(df_dtm, k = 4, control = list(seed = 1234))
 # Notes that fitting the model is the easy part - now need to explore and interpret the 
 ## model using the tidy approach
 
+# Examine Topic-Term Probability (Beta) ----------------------------------------
+  
+# Use tidy() from tidytext to extract per-topic-per-word probabilities from the model
+abstract_topics <- tidy(abstract_lda, matrix = "beta")
+
+
+# For each topic-term combination, the model copmutes the probability of that term being
+## generated from that topic.
+
+# Can use dplyr's top_n() to find the 10 terms that are most common within each topic and
+## then visualize with ggplot2
+
+abstract_top_terms <- abstract_topics %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+# Create interactive visualization of top terms
+abstract_top_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(x = term, y = beta, fill = factor(topic), 
+             text = paste("Term:", term, "\nBeta:", round(beta, 4)))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip() +
+  scale_x_reordered() +
+  labs(
+    title = "Top Terms in Each Topic",
+    x = NULL,
+    y = expression(beta)
+  )
+
 
 
 
