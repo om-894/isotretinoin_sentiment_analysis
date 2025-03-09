@@ -194,6 +194,36 @@ abstract_top_terms %>%
 # Includes different treatment modalities ("oral," "topical")
 # Describes clinical presentation with terms like "lesions," "disease"
 
+# Analyze document-topic probabilities (Gamma) ---------------------------------
 
+doc_topics <- tidy(abstract_lda, matrix = "gamma")
+
+# Document-topic distribution summary
+doc_topic_distribution <- doc_topics %>%
+  group_by(topic) %>%
+  summarise(mean_gamma = mean(gamma),
+            sd_gamma = sd(gamma)) %>%
+  arrange(desc(mean_gamma))
+
+# Visualize document-topic distribution
+ggplot(doc_topics, aes(gamma)) +
+  geom_histogram(bins = 50) +
+  facet_wrap(~topic, ncol = 2) +
+  labs(title = "Distribution of document probabilities for each topic",
+       x = "Probability (gamma)",
+       y = "Count")
+
+# The bimodal distribution in each panel shows that documents tend to either strongly 
+# belong (probability near 1.0) or strongly not belong (probability near 0.0) to each topic
+
+# The high counts at probability near 0.0 indicate that most documents have low 
+# probability of belonging to any single topic. The smaller peaks at probability 1.0 show 
+# that some documents are strongly associated with each topic
+
+# This pattern suggests clear topic separation, where documents tend to be distinctly 
+# categorized rather than having mixed topic assignments
+
+# The similar distribution patterns across all three topics suggests relatively 
+# balanced topic assignments in the corpus
 
 
