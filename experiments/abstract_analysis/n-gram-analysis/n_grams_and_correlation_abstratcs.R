@@ -43,7 +43,58 @@ abstracts_data <- abstracts_data %>%
 # Tokenize the text into bigrams (pairs of consecutive words)
 abstract_bigrams <- abstracts_data %>%
   group_by(period, abstract) %>%
-  unnest_tokens(bigram, comments_combined, token = "ngrams", n = 2)
+  unnest_tokens(bigram, abstract, token = "ngrams", n = 2)
+
+# Counting and Filtering N-grams -----------------------------------------------
+
+# Separate the bigrams into two columns
+bigrams_separated <- abstract_bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+# Remove stop words from both words in the bigrams
+bigrams_filtered <- bigrams_separated %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word)
+
+# Count the filtered bigrams
+bigram_counts <- bigrams_filtered %>%
+  count(word1, word2, sort = TRUE)
+
+# Unite the filtered bigrams back into a single column
+bigrams_united <- bigrams_filtered %>%
+  unite(bigram, word1, word2, sep = " ")
+
+# Add counts:
+bigrams_united_counts <- bigrams_filtered %>%
+  unite(bigram, word1, word2, sep = " ") %>%
+  count(bigram, sort = TRUE)
+
+### ADD IN CLEANING HERE (MOVE 'removing less meaningful words' TO HERE)
+
+# Plotting the most common bigrams for each subreddit
+bigrams_united_counts %>%
+  group_by(period) %>%  # Assuming you have a subreddit column
+  arrange(desc(n)) %>%
+  slice_max(n, n = 8) %>%  # Get top 8 bigrams per subreddit
+  ungroup() %>%
+  mutate(bigram = reorder_within(bigram, n, period)) %>%  # Reorder bigrams within each subreddit
+  ggplot(aes(bigram, n, fill = period)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "Count") +
+  facet_wrap(~period, ncol = 2, scales = "free") +
+  scale_x_reordered() +
+  coord_flip() +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    axis.text = element_text(size = 10),
+    plot.title = element_text(size = 12)
+  )
+
+# 'severe acne' is quite prevalent in 2006 and later. The word 'isotretinoin' also
+# Appears in both time periods, but more so in 2006 and later.
+# '13 cis' relates to retinoic acid. 'mg kg' relates to dosage.
 
 
 
