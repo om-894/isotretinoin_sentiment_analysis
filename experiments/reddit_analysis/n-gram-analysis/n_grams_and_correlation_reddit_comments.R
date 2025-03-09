@@ -221,7 +221,7 @@ accutane_post_words <- df_combined %>%
 word_pairs <- accutane_post_words %>%
   pairwise_count(word, post_num, sort = TRUE)
 
-# Examine the words most often appearing with "darcy"
+# Examine the words most often appearing with "progress"
 word_pairs %>%
   filter(item1 == "progress")
 
