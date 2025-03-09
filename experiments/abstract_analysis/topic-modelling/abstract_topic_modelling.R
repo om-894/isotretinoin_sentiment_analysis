@@ -223,7 +223,35 @@ ggplot(doc_topics, aes(gamma)) +
 # This pattern suggests clear topic separation, where documents tend to be distinctly 
 # categorized rather than having mixed topic assignments
 
-# The similar distribution patterns across all three topics suggests relatively 
+# The similar distribution patterns across all four topics suggests relatively 
 # balanced topic assignments in the corpus
 
+# Topic correlation analysis ---------------------------------------------------
+
+topic_correlations <- doc_topics %>%
+  spread(topic, gamma) %>%
+  select(-document) %>%
+  cor()
+
+# Visualize topic correlations
+corrplot(topic_correlations, method = "color",
+         type = "upper", order = "hclust",
+         addCoef.col = "black",
+         tl.col = "black", tl.srt = 45,
+         diag = FALSE)
+
+# The negative correlations across all topic pairs suggest that these topics are 
+# relatively distinct from each other, which is desirable in topic modeling.
+
+# The strongest distinction is between Topics 4 and 2 (-0.39), indicating these 
+# topics are most different from each other. Topics 1 and 2 show moderate distinction (-0.34)
+# Topics 2 and 3 have the weakest negative correlation (-0.22), suggesting these topics 
+# have some overlap in content
+
+# Print top words for inspection
+top_words <- df_tokens %>%
+  count(word, sort = TRUE) %>%
+  head(50)
+
+print(top_words)
 
