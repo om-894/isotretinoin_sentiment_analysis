@@ -174,6 +174,26 @@ abstract_top_terms %>%
     y = expression(beta)
   )
 
+# Topic 1 (Red): Clinical/Safety Focus
+# Emphasizes clinical aspects with terms like "isotretinoin," "patients," "treatment"
+# Includes safety considerations with terms like "risk" and "pregnancy"
+# Appears to focus on medical administration and monitoring
+
+# Topic 2 (Green): Molecular/Biological Mechanism
+# Features scientific terms like "acid," "retinoic," "cis"
+# Focuses on cellular aspects with "cells," "expression"
+# Describes the biological/chemical mechanisms of action
+
+# Topic 3 (Teal): Treatment Protocol and Research
+# Emphasizes clinical research with terms like "patients,"s "treatment," "study"
+# Includes dosing-related terms like "dose," "levels"
+# Also includes "cancer" suggesting therapeutic applications
+
+# Topic 4 (Purple): Clinical Manifestation and Treatment
+# Focuses on the disease and its treatment with terms like "acne," "treatment"
+# Includes different treatment modalities ("oral," "topical")
+# Describes clinical presentation with terms like "lesions," "disease"
+
 
 
 
