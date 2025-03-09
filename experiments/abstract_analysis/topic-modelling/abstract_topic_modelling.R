@@ -38,7 +38,7 @@ abstracts_data <- data %>%
 
 # SPLIT DATAFRAME WHEN CERTAIN MEASURES WERE INTRODUCED???
 
-# IDEA: split abstracts at 2006 because redit founded late 2005 and iPLEDGE was introduced 
+# IDEA: split abstracts at 2006 because reddit founded late 2005 and iPLEDGE was introduced 
 # in 2006.This woulkd address the question of whether the introduction of iPLEDGE had an 
 # impact on the number of articles published on isotretinoin and a fair timeframe comparison 
 # with Reddit.
