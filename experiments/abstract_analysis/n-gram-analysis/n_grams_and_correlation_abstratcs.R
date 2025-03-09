@@ -96,7 +96,93 @@ bigrams_united_counts %>%
 # Appears in both time periods, but more so in 2006 and later.
 # '13 cis' relates to retinoic acid. 'mg kg' relates to dosage.
 
+# Analysing Trigrams -----------------------------------------------------------
 
+abstract_trigrams <- abstracts_data %>%
+  unnest_tokens(trigram, abstract, token = "ngrams", n = 3) %>%
+  group_by(period) %>%
+  separate(trigram, c("word1", "word2", "word3"), sep = " ") %>%
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word,
+         !word3 %in% stop_words$word) %>%
+  count(word1, word2, word3, sort = TRUE)
+
+# Analyzing Bigrams ------------------------------------------------------------
+
+# Calculate tf-idf for bigrams
+bigram_tf_idf <- bigrams_united %>%
+  count(period, bigram) %>%
+  bind_tf_idf(bigram, period, n) %>%
+  arrange(desc(tf_idf))
+
+# Plotting the highest tf-idf bigrams for each book
+bigram_tf_idf %>%
+  group_by(period) %>%
+  slice_max(tf_idf, n = 7, with_ties = FALSE) %>%
+  ungroup %>%
+  mutate(bigram = reorder(bigram, tf_idf)) %>%
+  ggplot(aes(bigram, tf_idf, fill = period)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~period, ncol = 2, scales = "free") +
+  coord_flip()
+
+# Removing Less Meaningful Words -----------------------------------------------
+
+# We notice that some words like "et", "al", "pubmed.ncbi.nlm.nih.gov" are artifacts 
+# or less meaningful.
+# Let's remove these words using a custom stop words list.
+
+bigrams_united_clean <- bigrams_united %>%
+  filter(
+    # Remove URLs and web references
+    !str_detect(bigram, "^https?|www\\.|\\.com|\\.gov|\\.edu|\\.org"),
+    # Remove file references, numbers, and alphanumeric codes
+    !str_detect(bigram, "\\d{4}[a-z0-9]+|file\\s|sheet\\s|\\d+\\s*[a-z0-9]+|[a-z0-9]+\\s*\\d+"),
+    # Remove academic reference patterns
+    !str_detect(bigram, "article|abstract|doi|pii|^et al|\\sci\\s"),
+    # Remove specific patterns you mentioned
+    !str_detect(bigram, "isotretinoin https")
+  )
+
+# Create a custom stop words list to remove ones that regex could not remove
+custom_stop_words <- tibble(bigram = c("drive.google.com", "elta", "ms", "et", "al", 
+                                       "pubmed.ncbi.nlm.nih.gov", "ci", "uc", 
+                                       "www.accessdata.fda.gov", "youuu"))
+
+# Remove custom stop words from the data
+bigrams_united_clean <- bigrams_united_clean %>%
+  anti_join(custom_stop_words, by = "bigram")
+
+# Calculate tf-idf for bigrams
+bigram_tf_idf <- bigrams_united_clean %>%
+  count(period, bigram) %>%
+  bind_tf_idf(bigram, period, n) %>%
+  arrange(desc(tf_idf))
+
+# Plotting the highest tf-idf bigrams for each period of abstracts
+bigram_tf_idf %>%
+  group_by(period) %>%
+  slice_max(tf_idf, n = 7, with_ties = FALSE) %>%
+  ungroup %>%
+  mutate(bigram = reorder(bigram, tf_idf)) %>%
+  ggplot(aes(bigram, tf_idf, fill = period)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~period, ncol = 2, scales = "free") +
+  coord_flip()
+
+# 'Maternal plasma' is crucial in the pharmacokinetics of isotretinoin, as the drug binds 
+# extensively to plasma proteins and circulates within the maternal bloodstream. 
+# This allows isotretinoin to cross the placenta, exposing the fetus to its highly 
+# teratogenic effects. The drug’s persistence in maternal plasma, with a half-life of 
+# 10–20 hours and detectable metabolites for weeks, underscores the need for strict 
+# pregnancy prevention before, during, and after treatment.
+
+# 'Folic acid' levels are decreased when taking isotretinoin. 
+# There may have been more experiments done on this after 2006
+
+# 'mm hg' relates to blood pressure. Potentially less focus on this post 2006.
 
 
 
