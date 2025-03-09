@@ -186,6 +186,9 @@ bigram_tf_idf %>%
 
 # Using Bigrams to Provide Context in Sentiment Analysis -----------------------
 
+# Find most common negative words in bigrams and see the word associated after them??
+# Then use these as negation_words
+
 # Load the AFINN lexicon
 AFINN <- get_sentiments("afinn")
 
@@ -196,7 +199,7 @@ not_words <- bigrams_separated %>%
   count(word2, value, sort = TRUE) %>%
   ungroup()
 
-# Exploring other negation words
+# Exploring other negation words (CHANGE)
 negation_words <- c("not", "no", "never", "without", "quit", "cannot", "cant", "doesn't", "didn't")
 
 negated_words <- bigrams_separated %>%
@@ -226,5 +229,27 @@ negated_words %>%
   coord_flip() +
   facet_wrap(~ word1, scales = "free")
 
+# Counting and Correlating Pairs of Words with the widyr Package ---------------
 
+# Tokenizing by n-grams allows exploration of adjacent word pairs,
+# but sometimes we're interested in co-occurring words within a broader context
+# (e.g., within documents or chapters) even if they are not adjacent.
+
+# Counting and Correlating Among Sections --------------------------------------
+
+# Prepare the data
+accutane_abstract_words <- abstracts_data %>%
+  filter(period == "2006 and later") %>%
+  # Number each post from 1 onwards
+  mutate(post_num = row_number()) %>%
+  unnest_tokens(word, abstract) %>%
+  filter(!word %in% stop_words$word)
+
+# Count word pairs co-occurring within the same section
+word_pairs <- accutane_abstract_words %>%
+  pairwise_count(word, period, sort = TRUE)
+
+# Examine the words most often appearing with "darcy"
+word_pairs %>%
+  filter(item1 == "progress")
 
