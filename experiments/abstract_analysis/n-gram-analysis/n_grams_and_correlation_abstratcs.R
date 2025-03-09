@@ -184,6 +184,47 @@ bigram_tf_idf %>%
 
 # 'mm hg' relates to blood pressure. Potentially less focus on this post 2006.
 
+# Using Bigrams to Provide Context in Sentiment Analysis -----------------------
+
+# Load the AFINN lexicon
+AFINN <- get_sentiments("afinn")
+
+# Find words that are preceded by "not" and have a sentiment score
+not_words <- bigrams_separated %>%
+  filter(word1 == "not") %>%
+  inner_join(AFINN, by = c(word2 = "word")) %>%
+  count(word2, value, sort = TRUE) %>%
+  ungroup()
+
+# Exploring other negation words
+negation_words <- c("not", "no", "never", "without", "quit", "cannot", "cant", "doesn't", "didn't")
+
+negated_words <- bigrams_separated %>%
+  filter(word1 %in% negation_words) %>%
+  inner_join(AFINN, by = c(word2 = "word")) %>%
+  mutate(
+    adjusted_value = case_when(
+      word1 == "without" & word2 %in% c("pain", "shame", "worrying", "suffering") ~ value,
+      word1 == "stopped" & word2 %in% c("hurting", "suffering", "pain") ~ value,
+      TRUE ~ -value
+    )
+  ) %>%
+  count(word1, word2, adjusted_value, sort = TRUE) %>%
+  ungroup()
+
+# Plotting with adjusted sentiment scores
+negated_words %>%
+  mutate(contribution = n * adjusted_value,
+         word2 = reorder(paste(word1, word2, sep = " "), contribution)) %>%
+  group_by(word1) %>%
+  top_n(10, abs(contribution)) %>%
+  ungroup() %>%
+  ggplot(aes(word2, contribution, fill = contribution > 0)) +
+  geom_col(show.legend = FALSE) +
+  xlab("Negated words") +
+  ylab("Sentiment score * number of occurrences") +
+  coord_flip() +
+  facet_wrap(~ word1, scales = "free")
 
 
 
