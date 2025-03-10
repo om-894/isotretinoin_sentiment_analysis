@@ -50,6 +50,34 @@ abstract_words <- abstracts_data %>%
   count(word, sort = TRUE) %>%  # Count word frequencies
   ungroup()
 
+# ADD IN REMOVAL OF STOP WORDS #
+
+# Analyzing the term frequency -------------------------------------------------
+
+# Calculate the total number of words in each subreddit
+total_abstract_words <- abstract_words %>%
+  group_by(period) %>%
+  summarize(total = sum(n))
+
+# Join the total word counts to the word counts data frame
+abstract_words <- left_join(abstract_words, total_abstract_words, by = "period")
+
+# The data frame 'comment_words' now contains:
+# - subreddit: name of the subreddit
+# - word: the word
+# - n: the number of times the word appears in the subreddit
+# - total: the total number of words in the subreddit
+
+# Plotting Term Frequency Distributions ----------------------------------------
+
+# We can visualize the distribution of term frequencies in each novel.
+# This shows how often words appear in a novel relative to the total number of words.
+
+ggplot(abstract_words, aes(n / total, fill = period)) +
+  geom_histogram(show.legend = FALSE, bins = 30) +
+  xlim(NA, 0.0009) +  # Limit x-axis to focus on common term frequencies
+  facet_wrap(~period, ncol = 2, scales = "free_y") +
+  labs(x = "Term Frequency (n / total words)", y = "Count")
 
 
 
