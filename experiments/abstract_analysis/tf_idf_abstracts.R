@@ -139,8 +139,49 @@ ggplot(freq_by_rank, aes(rank, term_frequency, color = period)) +
 # Zipf's Law, with a consistent inverse relationship between rank and frequency across 
 # both time periods, though there may be slight variations in the distribution.
 
+# Calculating tf-idf -----------------------------------------------------------
 
+# The tf-idf statistic reflects how important a word is to a document in a collection.
+# We can calculate tf-idf to find words that are important to each novel.
 
+# Use bind_tf_idf() to calculate tf, idf, and tf-idf
+abstract_words <- abstract_words %>%
+  bind_tf_idf(word, period, n)
+
+# View the data frame with tf-idf
+abstract_words
+# The data frame now includes:
+# - tf: term frequency
+# - idf: inverse document frequency
+# - tf_idf: tf-idf score
+
+# Exploring High tf-idf Words --------------------------------------------------
+
+# Let's look at the words with the highest tf-idf scores in each subreddit.
+
+# View the words with highest tf-idf across all books
+abstract_words %>%
+  select(-total) %>%
+  arrange(desc(tf_idf))
+
+# We can visualize the top 15 words with the highest tf-idf for each period.
+
+abstract_words %>%
+  group_by(period) %>%
+  arrange(desc(tf_idf)) %>%
+  slice_max(tf_idf, n = 8) %>%  # Get top 8 words per book (doing this so graph looks better)
+  ungroup() %>%
+  mutate(word = reorder_within(word, tf_idf, period)) %>%  # Reorder words within each book
+  ggplot(aes(word, tf_idf, fill = period)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf", title = "Highest tf-idf Words in Jane Austen's Novels") +
+  facet_wrap(~period, ncol = 2, scales = "free") +
+  scale_x_reordered() +
+  coord_flip() +
+  theme_minimal()
+
+# tf-idf; it identifies words that are important to one document within a 
+# collection of documents.
 
 
 
