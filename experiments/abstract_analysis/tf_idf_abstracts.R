@@ -79,6 +79,70 @@ ggplot(abstract_words, aes(n / total, fill = period)) +
   facet_wrap(~period, ncol = 2, scales = "free_y") +
   labs(x = "Term Frequency (n / total words)", y = "Count")
 
+# Zipf's Law -------------------------------------------------------------------
+
+# Zipf's Law states that the frequency of a word is inversely proportional to its rank 
+# in the frequency table. We can explore this relationship by plotting the term frequency 
+# versus rank on a log-log scale.
+
+# Calculate rank and term frequency
+freq_by_rank <- abstract_words %>%
+  group_by(period) %>%
+  mutate(rank = row_number(),                 # Rank of the word within the book
+         term_frequency = n / total) %>%      # Term frequency (proportion)
+  ungroup()
+
+# Plot term frequency versus rank on log-log scales
+ggplot(freq_by_rank, aes(rank, term_frequency, color = period)) +
+  geom_line(linewidth = 1.1, alpha = 0.8) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(x = "Rank", y = "Term Frequency") +
+  theme_minimal()
+
+# The plot shows a linear relationship on a log-log scale,
+# indicating that Zipf's Law holds for these novels.
+
+# Fitting a Power Law to Zipf's Law --------------------------------------------
+
+# We can fit a linear model to the log-transformed data to find the exponent of the power law.
+
+# Subset the data to exclude extreme ranks
+rank_subset <- freq_by_rank %>%
+  filter(rank > 10, rank < 500)
+
+# Fit a linear model to the log-transformed term frequency and rank
+lm_result <- lm(log10(term_frequency) ~ log10(rank), data = rank_subset)
+
+# View the results
+summary(lm_result)
+# Residuals:
+#    Min        1Q    Median        3Q       Max 
+# -0.101604 -0.011540  0.002634  0.011525  0.110338 
+
+# Coefficients:
+#                Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) -1.139969   0.004469  -255.1   <2e-16 ***
+# log10(rank) -0.893053   0.001920  -465.1   <2e-16 ***
+
+# Plot the fitted power law
+ggplot(freq_by_rank, aes(rank, term_frequency, color = period)) +
+  geom_line(size = 1.1, alpha = 0.8) +
+  geom_abline(intercept = coef(lm_result)[1], slope = coef(lm_result)[2],
+              color = "gray50", linetype = 2) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(x = "Rank", y = "Term Frequency") +
+  theme_minimal()
+
+# The line of best fit in your graph shows that the term frequencies generally follow 
+# Zipf's Law, with a consistent inverse relationship between rank and frequency across 
+# both time periods, though there may be slight variations in the distribution.
+
+
+
+
+
 
 
 
