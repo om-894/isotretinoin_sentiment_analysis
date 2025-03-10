@@ -204,7 +204,9 @@ abstract_words_clean <- abstract_words %>%
 # Create a custom stop words list to remove ones that regex could not remove
 custom_stop_words <- tibble(word = c("drive.google.com", "elta", "ms", "et", "al", 
                                        "pubmed.ncbi.nlm.nih.gov", "ci", "uc", 
-                                       "www.accessdata.fda.gov", "youuu"))
+                                       "www.accessdata.fda.gov", "youuu", "es", "xed",
+                                     "itn", "dex", "mcf", "md", "xfc", "der", "hg",
+                                     "und"))
 
 # Remove custom stop words from the data
 abstract_words_clean <- abstract_words_clean %>%
@@ -217,16 +219,33 @@ abstract_words_clean <- abstract_words_clean %>%
 abstract_words_clean %>%
   group_by(period) %>%
   arrange(desc(tf_idf)) %>%
-  slice_max(tf_idf, n = 8) %>%  # Get top 8 words per book (doing this so graph looks better)
+  slice_max(tf_idf, n = 10) %>%
   ungroup() %>%
-  mutate(word = reorder_within(word, tf_idf, period)) %>%  # Reorder words within each book
+  mutate(word = reorder_within(word, tf_idf, period)) %>%
   ggplot(aes(word, tf_idf, fill = period)) +
   geom_col(show.legend = FALSE) +
-  labs(x = NULL, y = "tf-idf") +
-  facet_wrap(~period, ncol = 2, scales = "free") +
+  labs(x = NULL, y = "beta") +
+  facet_wrap(~period, ncol = 2, scales = "free", labeller = label_both) +
   scale_x_reordered() +
   coord_flip() +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# osdi relates to Ocular Surface Disease Index, is a 12-item questionnaire designed 
+# to provide a rapid assessment of the symptoms of ocular irritation consistent with 
+# dry eye disease and their impact on vision-related functioning.
+
+# CRABP1 is assumed to play an important role in retinoic acid-mediated differentiation 
+# and proliferation processes.
+
+# The FTC ensures that isotretinoin's marketing is not deceptive and that pharmaceutical 
+# companies engage in fair competition, while the FDA regulates its safety and approval.
 
 
 
