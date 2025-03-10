@@ -183,7 +183,50 @@ abstract_words %>%
 # tf-idf; it identifies words that are important to one document within a 
 # collection of documents.
 
+# Removing Less Meaningful Words -----------------------------------------------
+  
+# We notice that some words like "et", "al", "pubmed.ncbi.nlm.nih.gov" are artifacts 
+# or less meaningful.
+# Let's remove these words using a custom stop words list.
+  
+abstract_words_clean <- abstract_words %>%
+  filter(
+    # Remove URLs and web references
+    !str_detect(word, "^https?|www\\.|\\.com|\\.gov|\\.edu|\\.org"),
+    # Remove file references, numbers, and alphanumeric codes
+    !str_detect(word, "\\d{4}[a-z0-9]+|file\\s|sheet\\s|\\d+\\s*[a-z0-9]+|[a-z0-9]+\\s*\\d+"),
+    # Remove academic reference patterns
+    !str_detect(word, "article|abstract|doi|pii|^et al|\\sci\\s"),
+    # Remove specific patterns you mentioned
+    !str_detect(word, "isotretinoin https")
+  )
 
+# Create a custom stop words list to remove ones that regex could not remove
+custom_stop_words <- tibble(word = c("drive.google.com", "elta", "ms", "et", "al", 
+                                       "pubmed.ncbi.nlm.nih.gov", "ci", "uc", 
+                                       "www.accessdata.fda.gov", "youuu"))
+
+# Remove custom stop words from the data
+abstract_words_clean <- abstract_words_clean %>%
+  anti_join(custom_stop_words, by = "word")
+
+# Recalculate tf-idf
+abstract_words_clean <- abstract_words_clean %>%
+  bind_tf_idf(word, period, n)
+
+abstract_words_clean %>%
+  group_by(period) %>%
+  arrange(desc(tf_idf)) %>%
+  slice_max(tf_idf, n = 8) %>%  # Get top 8 words per book (doing this so graph looks better)
+  ungroup() %>%
+  mutate(word = reorder_within(word, tf_idf, period)) %>%  # Reorder words within each book
+  ggplot(aes(word, tf_idf, fill = period)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~period, ncol = 2, scales = "free") +
+  scale_x_reordered() +
+  coord_flip() +
+  theme_minimal()
 
 
 
