@@ -237,6 +237,8 @@ abstract_words_clean %>%
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
+# Figure should be final
+
 # osdi relates to Ocular Surface Disease Index, is a 12-item questionnaire designed 
 # to provide a rapid assessment of the symptoms of ocular irritation consistent with 
 # dry eye disease and their impact on vision-related functioning.
