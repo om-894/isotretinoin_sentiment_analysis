@@ -1,4 +1,6 @@
 
+# Load necessary libraries------------------------------------------------------
+
 library(tidytext)     # For text mining with tidy data principles
 library(dplyr)        # For data manipulation
 library(stringr)      # For string operations
