@@ -124,7 +124,7 @@ if __name__ == '__main__':
         for subreddit_name in filtered_subreddits:
         # for subreddit_name in subreddit_list:
             print(f"Fetching data from r/{subreddit_name}...")
-            posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=50)
+            posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=1000)
             # posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=10)
             if posts_and_comments:
                 # write_to_csv(posts_and_comments, f'{subreddit_name}_reddit_posts.csv')
@@ -145,25 +145,12 @@ if __name__ == '__main__':
 # https://www.reddit.com/r/AccutaneDamage/comments/fwmkhc/response_to_did_accutane_cause_my_health_issues/
 
 
-# DONE:
-# 1. combine all subreddits into one file (but do this additionally to having them separate 
-# - so i can compare sentiments between subreddits)
-# 2. add column for subreddit name
-# 3. new data folder for each individual subreddit
-# 4. find and filter for most popular posts for each subreddit (n=10)
-#    - Forget this, though script has been altered to do this which is good. 
-#    - It would be better to filter for posts relevant to isotretinoin or accutane
-# 5. test the limits on how many posts can be retrieved
-# 6. Sentiment analysis on each comment?
-
 ### Unused functions ###
 
-# New to do:
-# 1. Check if subreddit is relevant to isotretinoin or accutane - we will do this by only using relevant subreddits.
-#    - Not sure how i will do this yet but thinking that i will filter through imported list and only use those that are relevant.
-#    - by manually selecting them. maybe dataframe.drop() or something like that.
-#    - Or could filter through posts after to check that they are relevant?
+# To do:
+# 1. Check if subreddit is relevant to isotretinoin or accutane - we will do this by only using relevant subreddits. (DONE)
 # 2. Add in a counter mechanism to see how many posts are being retrieved from each subreddit.
+# 3. potentially increase number of posts retrieved from each subreddit. (Have tried 1000 but takes time to run. csv file takes forever to load)
 
 # DOES THE COMMENT SENTIMENT MATCH THE POST SENTIMENT?
 
