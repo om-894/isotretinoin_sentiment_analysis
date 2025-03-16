@@ -124,7 +124,7 @@ if __name__ == '__main__':
         for subreddit_name in filtered_subreddits:
         # for subreddit_name in subreddit_list:
             print(f"Fetching data from r/{subreddit_name}...")
-            posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=1000)
+            posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=200) # large limit only relevant for 'Accutane' subreddit
             # posts_and_comments = get_top_posts_and_comments(reddit, subreddit_name, limit=10)
             if posts_and_comments:
                 # write_to_csv(posts_and_comments, f'{subreddit_name}_reddit_posts.csv')
@@ -135,7 +135,7 @@ if __name__ == '__main__':
         
         # Write combined file with all subreddits
         if all_data:
-            write_to_csv(all_data, 'all_subreddits_reddit_posts.csv')
+            write_to_csv(all_data, 'subreddit_reddit_posts.csv')
             print("Saved all_subreddits_reddit_posts.csv")
     except Exception as e:
         print(f"Error reading subreddit list: {e}")
@@ -150,7 +150,8 @@ if __name__ == '__main__':
 # To do:
 # 1. Check if subreddit is relevant to isotretinoin or accutane - we will do this by only using relevant subreddits. (DONE)
 # 2. Add in a counter mechanism to see how many posts are being retrieved from each subreddit.
-# 3. potentially increase number of posts retrieved from each subreddit. (Have tried 1000 but takes time to run. csv file takes forever to load)
+# 3. potentially increase number of posts retrieved from each subreddit. 
+#    - Have tried 1000 but takes time to run. csv file takes forever to load. 200 is a solid number to use.
 
 # DOES THE COMMENT SENTIMENT MATCH THE POST SENTIMENT?
 
