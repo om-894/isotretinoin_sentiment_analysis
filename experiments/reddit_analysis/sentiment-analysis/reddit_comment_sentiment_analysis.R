@@ -380,7 +380,7 @@ sentiment_afinn %>%
 # ggsave("figures/reddit_figures/reddit_comments_afinn_sentiment_grades.png")
 
 
-### Group posts by subreddit to get overall subreddit sentiment-----------------
+### Group posts by subreddit to get overall subreddit sentiment with BING-------
 
 # Assuming post_sentiment is already calculated
 # Select top 10 posts by sentiment for each subreddit
@@ -409,5 +409,8 @@ ggplot(top_posts, aes(x = reorder(post_id, sentiment), y = sentiment, fill = sub
 
 # Save the plot
 ggsave("figures/reddit_figures/reddit_subreddits_top_sentiments_comments.png")
+
+
+### Group posts by subreddit to get overall subreddit sentiment with AFINN------
 
 
