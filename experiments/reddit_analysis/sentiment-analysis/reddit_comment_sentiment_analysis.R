@@ -242,7 +242,7 @@ ggplot(sentiments_combined, aes(x = as.factor(post_id), y = sentiment, fill = me
 # The sentiment scores are relatively balanced, with a mix of positive and negative sentiments
 
 
-### Most Common Positive and Negative Words-------------------------------------
+### Most Common Positive and Negative Words for BING----------------------------
 
 # Identify words that contribute most to positive and negative sentiment
 bing_word_counts <- tokenized_comments %>%
@@ -263,9 +263,20 @@ bing_word_counts %>%
   geom_col(show.legend = FALSE) +         # Use columns to represent counts
   facet_wrap(~sentiment, scales = "free_y") +  # Facet by sentiment
   coord_flip() +                          # Flip coordinates for readability
-  labs(title = "Most Common Positive and Negative Words in Abstracts",
-       x = NULL,
-       y = "Frequency")
+  labs(x = NULL,
+       y = "Frequency") +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+  
 
 # The word "like" may be incorrectly influencing sentiment analysis:
 # - "like" is classified as positive in the Bing lexicon.
@@ -281,8 +292,7 @@ custom_stop_words <- bind_rows(
 )
 
 
-# Plot sentiments for each post, being a combination of comment and post sentiment
-# Do this for each of the 6 subreddits.
+
 
 
 
