@@ -377,8 +377,11 @@ ggplot(top_posts, aes(x = reorder(post_id, sentiment), y = sentiment, fill = sub
     plot.margin = margin(10, 20, 10, 10)
   )
 
+# Save the plot
+# ggsave("figures/reddit_figures/reddit_subreddits_top_sentiments.png")
 
-#### Analyzing Units Beyond Just Words------------------------------------------
+
+### Analyzing Units Beyond Just Words-------------------------------------------
 # Tokenize text into sentences or chapters
 
 # Tokenize posts into sentences
