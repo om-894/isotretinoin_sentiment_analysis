@@ -9,7 +9,7 @@ library(reshape2)     # For reshaping data
 library(scales)       # For scaling in plots
 library(readr)        # For reading data
 
-#### Exploring Sentiment Lexicons ####
+### Exploring Sentiment Lexicons------------------------------------------------
 # The tidytext package includes several sentiment lexicons that we can use.
 
 # View the sentiments dataset
@@ -33,7 +33,7 @@ print(head(bing))
 print(head(nrc))
 
 
-#### Perform Sentiment Analysis on the comments and posts from reddit ####
+### Perform Sentiment Analysis on the comments and posts from reddit------------
 # data was gathered using python script 'subs_and_comments_script.py'
 # We will tokenize the articles into words and perform sentiment analysis.
 
@@ -55,9 +55,7 @@ df_combined <- df_combined %>%
   filter(comments_combined != "No comments")
 
 
-#############################################################################
-#       Tokenize the comments into words and perform sentiment analysis     #
-#############################################################################
+### Tokenize the comments into words and perform sentiment analysis-------------
 
 # Tokenize the comments into words
 tokenized_comments <- df_combined %>%
@@ -204,7 +202,8 @@ most_positive %>%
   theme_minimal() +
   theme(axis.text.y = element_text(size = 8))
 
-#### Analyzing Units Beyond Just Words ####
+
+### Analyzing Units Beyond Just Words------------------------------------------
 # Tokenize text into sentences or chapters for sentiment analysis.
 
 # Sentiment using AFINN lexicon
@@ -242,8 +241,8 @@ ggplot(sentiments_combined, aes(x = as.factor(post_id), y = sentiment, fill = me
 # All three lexicons agree on the overall trends in sentiment.
 # The sentiment scores are relatively balanced, with a mix of positive and negative sentiments
 
-#### Most Common Positive and Negative Words ####
-# Identify words that contribute most to positive and negative sentiment
+
+### Most Common Positive and Negative Words-------------------------------------
 
 # Identify words that contribute most to positive and negative sentiment
 bing_word_counts <- tokenized_comments %>%
