@@ -352,26 +352,33 @@ bing_word_counts_custom %>%
 
 ### Group posts by subreddit to get overall subreddit sentiment-----------------
 
-subreddit_sentiment <- post_sentiment %>%
-  group_by(subreddit) %>%  # Group by subreddit
-  summarise(sentiment = sum(sentiment))  # Sum sentiment scores
+# Assuming post_sentiment is already calculated
+# Select top 10 posts by sentiment for each subreddit
+top_posts <- post_sentiment %>%
+  group_by(subreddit) %>%
+  top_n(10, wt = abs(sentiment)) %>%  # Top 10 by absolute sentiment score
+  ungroup()
 
-# Plot this data
-subreddit_sentiment %>%
-  ggplot(aes(x = reorder(subreddit, sentiment), y = sentiment)) +
-  geom_col(fill = "skyblue", color = "skyblue") +  # Blue bars with blue outlines
-  coord_flip() +  # Flip coordinates for better readability
-  labs(title = "Subreddit Sentiment Scores",
-       x = "Subreddit",
-       y = "Net Sentiment Score") +
+# Plot the data
+ggplot(top_posts, aes(x = reorder(post_id, sentiment), y = sentiment, fill = subreddit)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  facet_wrap(~ subreddit, scales = "free_y", ncol = 1) +
+  labs(x = NULL, y = "Sentiment Score") +
   theme_minimal() +
-  theme(axis.text.y = element_text(size = 8))  # Reduce font size
+  theme(
+    panel.grid = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.ticks.y = element_line(color = "black"),
+    axis.ticks.x = element_line(color = "black"),
+    axis.ticks.length = unit(3, "pt"),
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10)
+  )
 
-# save the plot
-# ggsave("figures/reddit_subreddit_sentiments.png")
 
-
-#### Analyzing Units Beyond Just Words ####
+#### Analyzing Units Beyond Just Words------------------------------------------
 # Tokenize text into sentences or chapters
 
 # Tokenize posts into sentences
