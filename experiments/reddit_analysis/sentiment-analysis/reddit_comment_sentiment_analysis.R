@@ -333,6 +333,29 @@ bing_word_counts_custom %>%
 ggsave("figures/reddit_figures/reddit_comments_bing_overall_sentiment.png")
 
 
+### AFINN lexicon sentiment analysis--------------------------------------------
+
+# Calculate word frequency and sentiment value
+sentiment_afinn <- tokenized_comments_custom %>%
+  inner_join(afinn, by = "word") %>%
+  mutate(method = "AFINN") %>%
+  count(word, value, sort = TRUE)
+
+# Filter top 10 words for each sentiment value and create the plot
+sentiment_afinn %>%
+  group_by(value) %>%
+  slice_max(n, n = 10) %>%
+  ungroup() %>%
+  ggplot(aes(x = n, y = reorder(word, n), fill = value)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ value, scales = "free_y") +
+  labs(x = "Contribution to Sentiment", y = NULL) +
+  theme_minimal() +
+  theme(strip.text = element_text(size = 10))
+
+# adjust number scale
+
+
 
 
 
