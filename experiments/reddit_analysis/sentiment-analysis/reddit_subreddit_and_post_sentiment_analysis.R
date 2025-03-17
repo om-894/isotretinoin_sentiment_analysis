@@ -363,7 +363,7 @@ top_posts <- post_sentiment %>%
 ggplot(top_posts, aes(x = reorder(post_id, sentiment), y = sentiment, fill = subreddit)) +
   geom_col(show.legend = FALSE) +
   coord_flip() +
-  facet_wrap(~ subreddit, scales = "free_y", ncol = 1) +
+  facet_wrap(~ subreddit, scales = "free_y", ncol = 2) +  # Adjust ncol for layout
   labs(x = NULL, y = "Sentiment Score") +
   theme_minimal() +
   theme(
