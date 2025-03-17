@@ -67,7 +67,7 @@ tokenized_comments <- df_combined %>%
 print(head(tokenized_comments))
 
 
-### NRC lexicon sentiment analysis ###
+### NRC lexicon sentiment analysis----------------------------------------------
 sentiment_nrc <- tokenized_comments %>%
   inner_join(nrc %>% filter(sentiment %in% c("positive", "negative")), by = "word") %>%
   mutate(method = "NRC")
@@ -94,12 +94,23 @@ joy_words %>%
   ggplot(aes(x = reorder(word, n), y = n)) +
   geom_col(fill = "lightblue", color = "lightblue") +  # Blue bars with blue outlines
   coord_flip() +  # Flip coordinates for better readability
-  labs(title = "Most Common Joy Words in Comments",
-       x = "Word",
-       y = "Frequency") +
+  labs(x = "word",
+       y = "n") +
+  facet_wrap(~ "joy", ncol = 1) +  # Add a title box
   theme_minimal() +
-  theme(axis.text.y = element_text(size = 8)) +  # Reduce font size
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# Save to figures folder
+ggsave("figures/reddit_figures/reddit_comments_joy_words.png")
 
 # Find the most common "anger" words in the comments
 anger_words <- tokenized_comments %>%
@@ -115,19 +126,27 @@ anger_words %>%
   ggplot(aes(x = reorder(word, n), y = n)) +
   geom_col(fill = "indianred2", color = "indianred2") +  # Blue bars with blue outlines
   coord_flip() +  # Flip coordinates for better readability
-  labs(title = "Most Common Fear Words in Comments",
-       x = "Word",
-       y = "Frequency") +
+  labs(x = "word",
+       y = "n") +
+  facet_wrap(~ "anger", ncol = 1) +  # Add a title box
   theme_minimal() +
-  theme(axis.text.y = element_text(size = 8)) +  # Reduce font size
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# Save to figures folder
+ggsave("figures/reddit_figures/reddit_comments_anger_words.png")
 
 
-# Interpretation:
-# The most common words associated with fear in the comments are related to health risks,
-# mental health concerns, and general anxiety.
+### Bing lexicon sentiment analysis---------------------------------------------
 
-### Bing lexicon sentiment analysis ###
 # Assign sentiment to words using the Bing lexicon
 sentiment_bing <- tokenized_comments %>%
   inner_join(bing, by = "word") %>%
@@ -154,7 +173,7 @@ most_negative <- post_sentiment %>%
 most_negative %>%
   head(10) %>%  # Take the 10 most negative abstracts
   ggplot(aes(x = reorder(as.factor(post_id), -sentiment), y = sentiment)) +
-  geom_col(fill = "indianred3", color = "indianred3") +  # Red bars with black outlines
+  geom_col(fill = "indianred2", color = "indianred2") +  # Red bars with black outlines
   coord_flip() +  # Flip coordinates for better readability
   labs(title = "Top 10 Most Negative Sentiments in posts comments",
        x = "post title",
