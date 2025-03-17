@@ -108,7 +108,7 @@ joy_words %>%
   )
 
 # Save to figures folder
-ggsave("figures/reddit_figures/reddit_comments_joy_words.png")
+# ggsave("figures/reddit_figures/reddit_comments_joy_words.png")
 
 # Find the most common "anger" words in the comments
 anger_words <- tokenized_comments %>%
@@ -140,7 +140,7 @@ anger_words %>%
   )
 
 # Save to figures folder
-ggsave("figures/reddit_figures/reddit_comments_anger_words.png")
+# ggsave("figures/reddit_figures/reddit_comments_anger_words.png")
 
 
 ### Bing lexicon sentiment analysis---------------------------------------------
@@ -285,11 +285,28 @@ bing_word_counts %>%
 # To address this issue, we can create a custom stop word list to exclude "like" 
 # from the analysis.
 
-# Create a custom stop word list to exclude "patient"
-custom_stop_words <- bind_rows(
-  tibble(word = c("like"), lexicon = c("custom")),  # Add "like" as a custom stop word
-  stop_words                                               # Combine with the standard stop word list
+# Custom stop words
+custom_swear_words <- tibble(
+  word = c("bitch", "bitches", "cunt", "bastard", "shit", "fucking", "fuck", 
+           "ass", "fucked", "bullshit", "dick", "wtf", "asshole", "piss", "scumbag",
+           "fucker", "fuckers"),
+  lexicon = "custom"
 )
+
+# Combine custom and standard stop words
+custom_stop_words <- bind_rows(
+  custom_swear_words,
+  stop_words
+)
+
+# Add "like" as a custom stop word
+custom_stop_words <- bind_rows(
+  tibble(word = c("like"), lexicon = c("custom")),
+  custom_stop_words
+)
+
+# View the custom stop words
+print(custom_stop_words)
 
 # Tokenize the comments into words, excluding custom stop words
 tokenized_comments_custom <- df_combined %>%
@@ -330,7 +347,7 @@ bing_word_counts_custom %>%
   )
 
 # Save the plot
-ggsave("figures/reddit_figures/reddit_comments_bing_overall_sentiment.png")
+# ggsave("figures/reddit_figures/reddit_comments_bing_overall_sentiment.png")
 
 
 ### AFINN lexicon sentiment analysis--------------------------------------------
@@ -351,10 +368,20 @@ sentiment_afinn %>%
   facet_wrap(~ value, scales = "free_y") +
   labs(x = "Contribution to Sentiment", y = NULL) +
   theme_minimal() +
-  theme(strip.text = element_text(size = 10))
+  theme(strip.text = element_text(size = 10)) + 
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(3, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(size = 9),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
 
-# adjust number scale
-
+# Save the plot
+# ggsave("figures/reddit_figures/reddit_comments_afinn_sentiment_grades.png")
 
 
 
