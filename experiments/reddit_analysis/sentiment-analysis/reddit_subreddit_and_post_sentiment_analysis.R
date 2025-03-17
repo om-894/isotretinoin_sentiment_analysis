@@ -21,19 +21,8 @@ afinn <- get_sentiments("afinn")  # AFINN lexicon with numeric sentiment scores
 bing <- get_sentiments("bing")    # Bing lexicon with positive/negative sentiments
 nrc <- get_sentiments("nrc")      # NRC lexicon with various emotions and sentiments
 
-# All three lexicons are based on unigrams, i.e., single words. These lexicons 
-# contain many English words and the words are assigned scores for positive/negative 
-# sentiment, and also possibly emotions like joy, anger, sadness, and so forth. 
-# The NRC lexicon categorizes words in a binary fashion (“yes”/“no”) into categories 
-# of positive, negative, anger, anticipation, disgust, fear, joy, sadness, surprise, and trust.
 
-# View the first few entries of each lexicon
-print(head(afinn))
-print(head(bing))
-print(head(nrc))
-
-
-#### Perform Sentiment Analysis on the comments and posts from reddit ####
+### Perform Sentiment Analysis on the comments and posts from reddit------------
 # data was gathered using python script 'subs_and_comments_script.py'
 # We will tokenize the articles into words and perform sentiment analysis.
 
@@ -64,35 +53,91 @@ head(df_posts)
 # sentiment scores with the posts themselves. This will allow me to see the overall 
 # sentiment of the posts and subreddits and assess if comments match to posts.
 
-#############################################################################
-#       Tokenize the posts into words and perform sentiment analysis     #
-#############################################################################
+
+### Tokenize the posts into words and perform sentiment analysis----------------
 
 # Tokenize the posts into words
 tokenized_posts <- df_posts %>%
-  unnest_tokens(output = word, input = post_body)  # Tokenize the comments into words
+  unnest_tokens(output = word, input = post_body)  # Tokenize the post body into words
 
 # View the tokenized data
 print(head(tokenized_posts))
 
-### NRC lexicon sentiment analysis ###
+
+### NRC lexicon sentiment analysis----------------------------------------------
+
 sentiment_nrc <- tokenized_posts %>%
   inner_join(nrc %>% filter(sentiment %in% c("positive", "negative")), by = "word") %>%
   mutate(method = "NRC")
 
-# Filter the NRC lexicon for words associated with "fear"
-nrc_fear <- nrc %>%
-  filter(sentiment == "fear")
+# Filter the NRC lexicon for words associated with "anger"
+nrc_anger <- nrc %>%
+  filter(sentiment == "anger")
 
-# Find the most common "fear" words in the comments
-fear_words <- tokenized_posts %>%
-  inner_join(nrc_fear, by = "word") %>%  # Join with fear words
+# Filter the NRC lexicon for words associated with "joy"
+nrc_joy <- nrc %>%
+  filter(sentiment == "joy")
+
+# Find the most common "joy" words in the comments
+joy_words <- tokenized_posts %>%
+  inner_join(nrc_joy, by = "word") %>%  # Join with fear words
   count(word, sort = TRUE)              # Count occurrences
 
-# View the most common fear words
-print(head(fear_words, 10))
+# use the most common joy words
+top_joy <- head(joy_words, 10)
 
-# These words show a negative sentiment. The words are associated with fear and negative emotions.
+# plot the most common joy words
+top_joy %>%
+  top_n(10) %>%  # Take the 10 most common joy words
+  ggplot(aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "lightblue", color = "lightblue") +  # Blue bars with blue outlines
+  coord_flip() +  # Flip coordinates for better readability
+  labs(x = "word",
+       y = "n") +
+  facet_wrap(~ "joy", ncol = 1) +  # Add a title box
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(3, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# Save to figures folder
+# ggsave("figures/reddit_figures/reddit_posts_joy_words.png")
+
+# Find the most common "anger" words in the comments
+anger_words <- tokenized_posts %>%
+  inner_join(nrc_anger, by = "word") %>%  # Join with fear words
+  count(word, sort = TRUE)                # Count occurrences
+
+# View the most common anger words
+top_anger <- head(anger_words, 10)
+
+# plot the most common anger words
+top_anger %>%
+  top_n(10) %>%  # Take the 10 most common joy words
+  ggplot(aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "indianred2", color = "indianred2") +  # Blue bars with blue outlines
+  coord_flip() +  # Flip coordinates for better readability
+  labs(x = "word",
+       y = "n") +
+  facet_wrap(~ "anger", ncol = 1) +  # Add a title box
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(3, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
 
 
 ### Bing lexicon sentiment analysis ###
