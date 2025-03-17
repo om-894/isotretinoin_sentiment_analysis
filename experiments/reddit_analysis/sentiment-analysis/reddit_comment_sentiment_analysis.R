@@ -291,6 +291,46 @@ custom_stop_words <- bind_rows(
   stop_words                                               # Combine with the standard stop word list
 )
 
+# Tokenize the comments into words, excluding custom stop words
+tokenized_comments_custom <- df_combined %>%
+  unnest_tokens(output = word, input = comments_combined, token = "regex", pattern = "\\s+") %>%
+  anti_join(custom_stop_words, by = "word")  # Exclude custom stop words
+
+# Count the most common positive and negative words
+bing_word_counts_custom <- tokenized_comments_custom %>%
+  inner_join(bing, by = "word") %>%         # Join with Bing lexicon
+  count(word, sentiment, sort = TRUE) %>%  # Count word occurrences by sentiment
+  ungroup()
+
+# View the most common positive and negative words
+print(head(bing_word_counts_custom, 10))
+
+# Plot the most common positive and negative words
+bing_word_counts_custom %>%
+  group_by(sentiment) %>%
+  top_n(10, n) %>%                        # Get top 10 words by sentiment
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%     # Reorder words by frequency
+  ggplot(aes(x = word, y = n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +         # Use columns to represent counts
+  facet_wrap(~sentiment, scales = "free_y") +  # Facet by sentiment
+  coord_flip() +                          # Flip coordinates for readability
+  labs(x = NULL,
+       y = "contribution to sentiment") +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# Save the plot
+ggsave("figures/reddit_figures/reddit_comments_bing_overall_sentiment.png")
 
 
 
