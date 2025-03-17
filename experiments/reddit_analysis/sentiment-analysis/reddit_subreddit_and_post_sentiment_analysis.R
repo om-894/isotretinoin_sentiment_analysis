@@ -139,8 +139,12 @@ top_anger %>%
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
+# Save to figures folder
+# ggsave("figures/reddit_figures/reddit_posts_anger_words.png")
 
-### Bing lexicon sentiment analysis ###
+
+### Bing lexicon sentiment analysis---------------------------------------------
+
 # Assign sentiment to words using the Bing lexicon
 sentiment_bing <- tokenized_posts %>%
   inner_join(bing, by = "word") %>%
@@ -199,7 +203,7 @@ most_positive %>%
   theme(axis.text.y = element_text(size = 8))
 
 
-#### Analyzing Units Beyond Just Words ####
+### Analyzing Units Beyond Just Words-------------------------------------------
 # Tokenize text into sentences or chapters for sentiment analysis.
 
 # Sentiment using AFINN lexicon
@@ -238,8 +242,8 @@ ggplot(sentiments_combined, aes(x = as.factor(post_id), y = sentiment, fill = me
 # BING and AFINN lexicons see it as highly negative
 # The sentiment scores are relatively balanced, with a mix of positive and negative sentiments
 
-#### Most Common Positive and Negative Words ####
-# Identify words that contribute most to positive and negative sentiment
+
+### Most Common Positive and Negative Words for BING----------------------------
 
 # Identify words that contribute most to positive and negative sentiment
 bing_word_counts <- tokenized_posts %>%
@@ -260,12 +264,19 @@ bing_word_counts %>%
   geom_col(show.legend = FALSE) +         # Use columns to represent counts
   facet_wrap(~sentiment, scales = "free_y") +  # Facet by sentiment
   coord_flip() +                          # Flip coordinates for readability
-  labs(title = "Most Common Positive and Negative Words in Abstracts",
-       x = NULL,
-       y = "Frequency")
-
-# save figure
-# ggsave("figures/reddit_posts_common_words.png")
+  labs(x = NULL,
+       y = "Frequency") +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
 
 # The word "like" may be incorrectly influencing sentiment analysis:
 # - "like" is classified as positive in the Bing lexicon.
@@ -274,15 +285,72 @@ bing_word_counts %>%
 # To address this issue, we can create a custom stop word list to exclude "like" 
 # from the analysis.
 
-# Create a custom stop word list to exclude "patient"
-custom_stop_words <- bind_rows(
-  tibble(word = c("like"), lexicon = c("custom")),  # Add "like" as a custom stop word
-  stop_words                                               # Combine with the standard stop word list
+# Custom stop words
+custom_swear_words <- tibble(
+  word = c("bitch", "bitches", "cunt", "bastard", "shit", "fucking", "fuck", 
+           "ass", "fucked", "bullshit", "dick", "wtf", "asshole", "piss", "scumbag",
+           "fucker", "fuckers"),
+  lexicon = "custom"
 )
 
-#####################################################################
-#    Group posts by subreddit to get overall subreddit sentiment    #
-#####################################################################
+# Combine custom and standard stop words
+custom_stop_words <- bind_rows(
+  custom_swear_words,
+  stop_words
+)
+
+# Add "like" as a custom stop word
+custom_stop_words <- bind_rows(
+  tibble(word = c("like"), lexicon = c("custom")),
+  custom_stop_words
+)
+
+# View the custom stop words
+print(custom_stop_words)
+
+# Tokenize the comments into words, excluding custom stop words
+tokenized_posts_custom <- df_posts %>%
+  unnest_tokens(output = word, input = post_body, token = "regex", pattern = "\\s+") %>%
+  anti_join(custom_stop_words, by = "word")  # Exclude custom stop words
+
+# Count the most common positive and negative words
+bing_word_counts_custom <- tokenized_posts_custom %>%
+  inner_join(bing, by = "word") %>%         # Join with Bing lexicon
+  count(word, sentiment, sort = TRUE) %>%  # Count word occurrences by sentiment
+  ungroup()
+
+# View the most common positive and negative words
+print(head(bing_word_counts_custom, 10))
+
+# Plot the most common positive and negative words
+bing_word_counts_custom %>%
+  group_by(sentiment) %>%
+  top_n(10, n) %>%                        # Get top 10 words by sentiment
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%     # Reorder words by frequency
+  ggplot(aes(x = word, y = n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +         # Use columns to represent counts
+  facet_wrap(~sentiment, scales = "free_y") +  # Facet by sentiment
+  coord_flip() +                          # Flip coordinates for readability
+  labs(x = NULL,
+       y = "contribution to sentiment") +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# Save the plot
+# ggsave("figures/reddit_figures/reddit_posts_bing_overall_sentiment.png")
+
+
+### Group posts by subreddit to get overall subreddit sentiment-----------------
 
 subreddit_sentiment <- post_sentiment %>%
   group_by(subreddit) %>%  # Group by subreddit
