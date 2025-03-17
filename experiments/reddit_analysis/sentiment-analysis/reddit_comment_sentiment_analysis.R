@@ -72,28 +72,57 @@ sentiment_nrc <- tokenized_comments %>%
   inner_join(nrc %>% filter(sentiment %in% c("positive", "negative")), by = "word") %>%
   mutate(method = "NRC")
 
-# Filter the NRC lexicon for words associated with "fear"
-nrc_fear <- nrc %>%
-  filter(sentiment == "fear")
+# Filter the NRC lexicon for words associated with "anger"
+nrc_anger <- nrc %>%
+  filter(sentiment == "anger")
 
-# Find the most common "fear" words in the comments
-fear_words <- tokenized_comments %>%
-  inner_join(nrc_fear, by = "word") %>%  # Join with fear words
+# Filter the NRC lexicon for words associated with "joy"
+nrc_joy <- nrc %>%
+  filter(sentiment == "joy")
+
+# Find the most common "joy" words in the comments
+joy_words <- tokenized_comments %>%
+  inner_join(nrc_joy, by = "word") %>%  # Join with fear words
   count(word, sort = TRUE)              # Count occurrences
 
-# View the most common fear words
-print(head(fear_words, 10))
+# View the most common joy words
+print(head(joy_words, 10))
 
-# Summary of the top 10 most common words associated with the sentiment:
-# 
-# - `word`: Lists the specific words linked to the sentiment.
-# - `n`: Indicates the frequency of each word in the dataset.
-#
-# Key observations:
-# 1. High-frequency words such as "pain" (127) and "bad" (42) 
-# 2. Terms like "pain" "anxiety" and "medical" suggest discussions on health risks
-# 3. Terms "Depressed" and "anxiety" indicate mental health concerns
-#
+# plot the most common joy words
+joy_words %>%
+  top_n(10) %>%  # Take the 10 most common joy words
+  ggplot(aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "lightblue", color = "lightblue") +  # Blue bars with blue outlines
+  coord_flip() +  # Flip coordinates for better readability
+  labs(title = "Most Common Joy Words in Comments",
+       x = "Word",
+       y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 8)) +  # Reduce font size
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+# Find the most common "anger" words in the comments
+anger_words <- tokenized_comments %>%
+  inner_join(nrc_anger, by = "word") %>%  # Join with fear words
+  count(word, sort = TRUE)                # Count occurrences
+
+# View the most common anger words
+print(head(anger_words, 10))
+
+# plot the most common anger words
+anger_words %>%
+  top_n(10) %>%  # Take the 10 most common joy words
+  ggplot(aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "indianred2", color = "indianred2") +  # Blue bars with blue outlines
+  coord_flip() +  # Flip coordinates for better readability
+  labs(title = "Most Common Fear Words in Comments",
+       x = "Word",
+       y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 8)) +  # Reduce font size
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+
 # Interpretation:
 # The most common words associated with fear in the comments are related to health risks,
 # mental health concerns, and general anxiety.
