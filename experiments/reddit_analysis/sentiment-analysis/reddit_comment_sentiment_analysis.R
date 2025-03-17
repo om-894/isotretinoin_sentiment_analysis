@@ -151,7 +151,7 @@ sentiment_bing <- tokenized_comments %>%
   mutate(method = "BING")
 
 # Count positive and negative words for each abstract
-post_comment_sentiment <- sentiment_bing %>%
+post_comment_sentiment_bing <- sentiment_bing %>%
   group_by(subreddit, post_id, post_title, post_body) %>%                  # Group by post (identified by post_title)
   count(sentiment) %>%                # Count positive and negative words
   spread(sentiment, n, fill = 0) %>%  # Convert to wide format
@@ -159,7 +159,7 @@ post_comment_sentiment <- sentiment_bing %>%
 
 
 # Filter the posts with the most negative sentiments in decending order
-most_negative <- post_sentiment %>%
+most_negative <- post_comment_sentiment_bing %>%
   arrange(sentiment) %>%  # Sort by sentiment
   select(post_id, post_title, sentiment)  # Select the post_id, post_title and sentiment
 
@@ -384,13 +384,13 @@ sentiment_afinn %>%
 
 # Assuming post_sentiment is already calculated
 # Select top 10 posts by sentiment for each subreddit
-top_posts <- post_comment_sentiment %>%
+top_posts_bing <- post_comment_sentiment_bing %>%
   group_by(subreddit) %>%
   top_n(10, wt = abs(sentiment)) %>%  # Top 10 by absolute sentiment score
   ungroup()
 
 # Plot the data
-ggplot(top_posts, aes(x = reorder(post_id, sentiment), y = sentiment, fill = subreddit)) +
+ggplot(top_posts_bing, aes(x = reorder(post_id, sentiment), y = sentiment, fill = subreddit)) +
   geom_col(show.legend = FALSE) +
   coord_flip() +
   facet_wrap(~ subreddit, scales = "free_y", ncol = 2) +  # Adjust ncol for layout
@@ -408,9 +408,43 @@ ggplot(top_posts, aes(x = reorder(post_id, sentiment), y = sentiment, fill = sub
   )
 
 # Save the plot
-ggsave("figures/reddit_figures/reddit_subreddits_top_sentiments_comments.png")
+# ggsave("figures/reddit_figures/reddit_subreddits_top_sentiments_comments_bing.png")
 
 
 ### Group posts by subreddit to get overall subreddit sentiment with AFINN------
+
+# count afinn sentiment for each comment
+post_comment_sentiment_afinn <- tokenized_comments %>%
+  inner_join(afinn, by = "word") %>%
+  group_by(subreddit, post_id, post_title) %>%
+  summarise(sentiment = sum(value)) %>%
+  mutate(method = "AFINN")
+
+# get top 10 posts by sentiment for each subreddit
+top_posts_afinn <- post_comment_sentiment_afinn %>%
+  group_by(subreddit) %>%
+  top_n(10, wt = abs(sentiment)) %>%  # Top 10 by absolute sentiment score
+  ungroup()
+
+# Plot the data
+ggplot(top_posts_afinn, aes(x = reorder(post_id, sentiment), y = sentiment, fill = subreddit)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  facet_wrap(~ subreddit, scales = "free_y", ncol = 2) +  # Adjust ncol for layout
+  labs(x = NULL, y = "Sentiment Score") +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.ticks.y = element_line(color = "black"),
+    axis.ticks.x = element_line(color = "black"),
+    axis.ticks.length = unit(3, "pt"),
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10)
+  )
+
+# Save the plot
+# ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_subreddits_top_sentiments_comments_afinn.png")
 
 
