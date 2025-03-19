@@ -243,7 +243,7 @@ ggplot(sentiments_combined, aes(x = as.factor(post_id), y = sentiment, fill = me
 # The sentiment scores are relatively balanced, with a mix of positive and negative sentiments
 
 
-### Most Common Positive and Negative Words for BING----------------------------
+### Most Positive and Negative Words contribution for BING----------------------
 
 # Identify words that contribute most to positive and negative sentiment
 bing_word_counts <- tokenized_posts %>%
