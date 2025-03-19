@@ -242,70 +242,115 @@ custom_stop_words <- bind_rows(
   stop_words                                               # Combine with the standard stop word list
 )
 
-#### Creating Word Clouds ####
-# Visualize the most common words using word clouds
 
-# Remove stop words
-tidy_abstracts_no_stop <- tidy_abstracts %>%
-  anti_join(stop_words, by = "word")  # Exclude stop words
-
-# Create a word cloud of the most common words
-tidy_abstracts_no_stop %>%
-  count(word) %>%                     # Count word occurrences
-  with(wordcloud(word, n, max.words = 100))  # Generate a word cloud
-
-# Prepare data for comparison word cloud
-word_counts_sentiment <- tidy_abstracts %>%
-  inner_join(bing, by = "word") %>%     # Join with Bing lexicon for sentiments
-  count(word, sentiment, sort = TRUE) %>%  # Count words by sentiment
-  acast(word ~ sentiment, value.var = "n", fill = 0)  # Reshape data for comparison
-
-# Create a comparison word cloud
-comparison.cloud(word_counts_sentiment,
-                 colors = c("blue", "red"),  # Colors for positive and negative words
-                 max.words = 100)           # Limit to 100 most common words
-
-# Create a comparison word cloud for abstracts
-tidy_abstracts %>%
-  inner_join(get_sentiments("bing"), by = "word") %>%  # Join with Bing lexicon
-  count(word, sentiment, sort = TRUE) %>%             # Count word occurrences by sentiment
-  acast(word ~ sentiment, value.var = "n", fill = 0) %>%  # Reshape for comparison
-  comparison.cloud(colors = c("blue", "red"),         # Colors for positive and negative
-                   max.words = 100)                   # Limit to 100 most common words
-
-# save the plot
-ggsave("figures/comparison_word_cloud.png")
+### ADD IN
 
 
-#### Analyzing Units Beyond Just Words ####
+### Most Positive and Negative Words contribution for BING----------------------
 
-library(dplyr)
-library(tidyr)
-library(stringr)
+# Identify words that contribute most to positive and negative sentiment
+bing_word_counts <- tokenized_posts %>%
+  inner_join(bing, by = "word") %>%         # Join with Bing lexicon
+  count(word, sentiment, sort = TRUE) %>%  # Count word occurrences by sentiment
+  ungroup()
 
-# Tokenize abstracts into sentences
-abstract_sentences <- abstracts_data %>%
-  mutate(sentences = str_split(abstract, "\\.\\s+")) %>%  # Split at full stops followed by space
-  unnest(sentences) %>%                                  # Expand sentences into individual rows
-  mutate(sentences = str_trim(sentences))                # Remove extra whitespace
+# View the most common positive and negative words
+print(head(bing_word_counts, 10))
 
+# Plot the most common positive and negative words
+bing_word_counts %>%
+  group_by(sentiment) %>%
+  top_n(10, n) %>%                        # Get top 10 words by sentiment
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%     # Reorder words by frequency
+  ggplot(aes(x = word, y = n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +         # Use columns to represent counts
+  facet_wrap(~sentiment, scales = "free_y") +  # Facet by sentiment
+  coord_flip() +                          # Flip coordinates for readability
+  labs(x = NULL,
+       y = "Frequency") +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
 
-abstract_sentences <- abstract_sentences %>%
-  filter(sentences != "")
+# The word "like" may be incorrectly influencing sentiment analysis:
+# - "like" is classified as positive in the Bing lexicon.
+# - However, "like" is often used in a neutral context, such as "I like apples."
 
-# print a sample sentence
-print(head(abstract_sentences))
+# To address this issue, we can create a custom stop word list to exclude "like" 
+# from the analysis.
 
-# We want tot keep the sentences column, so we use drop = FALSE
-# unnest_tokens() will create a new column with the tokenized words but will 
-# now the original sentences column. Normally it would drop it.
+# Custom stop words
+custom_swear_words <- tibble(
+  word = c("bitch", "bitches", "cunt", "bastard", "shit", "fucking", "fuck", 
+           "ass", "fucked", "bullshit", "dick", "wtf", "asshole", "piss", "scumbag",
+           "fucker", "fuckers"),
+  lexicon = "custom"
+)
 
-# Tokenize the sentences into words, keeping the sentences column
-tidy_sentences <- abstract_sentences %>%
-  unnest_tokens(word, sentences, drop = FALSE)
+# Combine custom and standard stop words
+custom_stop_words <- bind_rows(
+  custom_swear_words,
+  stop_words
+)
 
-# View the tokenized data
-print(head(tidy_sentences))
+# Add "like" as a custom stop word
+custom_stop_words <- bind_rows(
+  tibble(word = c("like"), lexicon = c("custom")),
+  custom_stop_words
+)
+
+# View the custom stop words
+print(custom_stop_words)
+
+# Tokenize the comments into words, excluding custom stop words
+tokenized_posts_custom <- df_posts %>%
+  unnest_tokens(output = word, input = post_body, token = "regex", pattern = "\\s+") %>%
+  anti_join(custom_stop_words, by = "word")  # Exclude custom stop words
+
+# Count the most common positive and negative words
+bing_word_counts_custom <- tokenized_posts_custom %>%
+  inner_join(bing, by = "word") %>%         # Join with Bing lexicon
+  count(word, sentiment, sort = TRUE) %>%  # Count word occurrences by sentiment
+  ungroup()
+
+# View the most common positive and negative words
+print(head(bing_word_counts_custom, 10))
+
+# Plot the most common positive and negative words
+bing_word_counts_custom %>%
+  group_by(sentiment) %>%
+  top_n(10, n) %>%                        # Get top 10 words by sentiment
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%     # Reorder words by frequency
+  ggplot(aes(x = word, y = n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +         # Use columns to represent counts
+  facet_wrap(~sentiment, scales = "free_y") +  # Facet by sentiment
+  coord_flip() +                          # Flip coordinates for readability
+  labs(x = NULL,
+       y = "contribution to sentiment") +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# Save the plot
+# ggsave("figures/reddit_figures/reddit_posts_bing_overall_sentiment.png")
 
 
 
