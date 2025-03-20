@@ -108,7 +108,7 @@ top_joy %>%
   )
 
 # Save to figures folder
-# ggsave("figures/reddit_figures/reddit_posts_joy_words.png")
+ggsave("figures/reddit_figures/reddit_posts_joy_words.png")
 
 # Find the most common "anger" words in the comments
 anger_words <- tokenized_posts %>%
@@ -140,7 +140,7 @@ top_anger %>%
   )
 
 # Save to figures folder
-# ggsave("figures/reddit_figures/reddit_posts_anger_words.png")
+ggsave("figures/reddit_figures/reddit_posts_anger_words.png")
 
 
 ### Bing lexicon sentiment analysis---------------------------------------------
@@ -180,7 +180,7 @@ most_negative %>%
   theme(axis.text.y = element_text(size = 8))  # Reduce font size
 
 # save the plot
-# ggsave("figures/reddit_comments_negative_sentiments.png")
+# ggsave("figures/reddit_posts_negative_sentiments.png")
 
 # Filter the PMIDs with the most positive sentiments in decending order
 most_positive <- post_sentiment %>%
@@ -287,9 +287,7 @@ bing_word_counts %>%
 
 # Custom stop words
 custom_swear_words <- tibble(
-  word = c("bitch", "bitches", "cunt", "bastard", "shit", "fucking", "fuck", 
-           "ass", "fucked", "bullshit", "dick", "wtf", "asshole", "piss", "scumbag",
-           "fucker", "fuckers"),
+  word = c("wtf"),
   lexicon = "custom"
 )
 
@@ -300,7 +298,7 @@ custom_stop_words <- bind_rows(
 )
 
 # Add "like" as a custom stop word
-custom_stop_words <- bind_rows(
+stop_words <- bind_rows(
   tibble(word = c("like"), lexicon = c("custom")),
   custom_stop_words
 )
@@ -350,17 +348,57 @@ bing_word_counts_custom %>%
 # ggsave("figures/reddit_figures/reddit_posts_bing_overall_sentiment.png")
 
 
-### Group posts by subreddit to get overall subreddit sentiment-----------------
+### AFINN lexicon sentiment analysis--------------------------------------------
+
+# Calculate word frequency and sentiment value
+sentiment_afinn <- tokenized_posts_custom %>%
+  inner_join(afinn, by = "word") %>%
+  mutate(method = "AFINN") %>%
+  count(word, value, sort = TRUE)
+
+# Without swear words
+# sentiment_afinn <- tokenized_comments_custom %>%
+#   inner_join(afinn, by = "word") %>%
+#   mutate(method = "AFINN") %>%
+#   count(word, value, sort = TRUE)
+
+# Filter top 10 words for each sentiment value and create the plot
+sentiment_afinn %>%
+  group_by(value) %>%
+  slice_max(n, n = 10) %>%
+  ungroup() %>%
+  ggplot(aes(x = n, y = reorder(word, n), fill = value)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ value, scales = "free_y") +
+  labs(x = "Contribution to Sentiment", y = NULL) +
+  theme_minimal() +
+  theme(strip.text = element_text(size = 10)) + 
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(3, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(size = 9),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# Save the plot
+# ggsave("figures/reddit_figures/reddit_posts_afinn_sentiment_grades_with_swear.png")
+
+
+### Group posts by subreddit to get overall subreddit sentiment with BING-------
 
 # Assuming post_sentiment is already calculated
 # Select top 10 posts by sentiment for each subreddit
-top_posts <- post_sentiment %>%
+top_posts_bing <- post_sentiment %>%
   group_by(subreddit) %>%
   top_n(10, wt = abs(sentiment)) %>%  # Top 10 by absolute sentiment score
   ungroup()
 
 # Plot the data
-ggplot(top_posts, aes(x = reorder(post_id, sentiment), y = sentiment, fill = subreddit)) +
+ggplot(top_posts_bing, aes(x = reorder(post_id, sentiment), y = sentiment, fill = subreddit)) +
   geom_col(show.legend = FALSE) +
   coord_flip() +
   facet_wrap(~ subreddit, scales = "free_y", ncol = 2) +  # Adjust ncol for layout
@@ -378,5 +416,7 @@ ggplot(top_posts, aes(x = reorder(post_id, sentiment), y = sentiment, fill = sub
   )
 
 # Save the plot
-# ggsave("figures/reddit_figures/reddit_subreddits_top_sentiments.png")
+ggsave("figures/reddit_figures/reddit_subreddits_top_post_sentiments_bing.png")
+
+
 
