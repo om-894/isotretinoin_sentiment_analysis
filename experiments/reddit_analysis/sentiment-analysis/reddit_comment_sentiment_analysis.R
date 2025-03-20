@@ -283,11 +283,16 @@ bing_word_counts %>%
 
 # Custom stop words
 custom_swear_words <- tibble(
-  word = c("bitch", "bitches", "cunt", "bastard", "shit", "fucking", "fuck", 
-           "ass", "fucked", "bullshit", "dick", "wtf", "asshole", "piss", "scumbag",
-           "fucker", "fuckers"),
+  word = c("wtf"),
   lexicon = "custom"
 )
+
+# custom_swear_words <- tibble(
+#   word = c("bitch", "bitches", "cunt", "bastard", "shit", "fucking", "fuck", 
+#            "ass", "fucked", "bullshit", "dick", "wtf", "asshole", "piss", "scumbag",
+#            "fucker", "fuckers"),
+#   lexicon = "custom"
+# )
 
 # Combine custom and standard stop words
 custom_stop_words <- bind_rows(
