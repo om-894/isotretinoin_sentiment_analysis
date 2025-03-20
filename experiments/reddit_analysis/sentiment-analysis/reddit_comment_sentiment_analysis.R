@@ -349,10 +349,16 @@ bing_word_counts_custom %>%
 ### AFINN lexicon sentiment analysis--------------------------------------------
 
 # Calculate word frequency and sentiment value
-sentiment_afinn <- tokenized_comments_custom %>%
+sentiment_afinn <- tokenized_comments %>%
   inner_join(afinn, by = "word") %>%
   mutate(method = "AFINN") %>%
   count(word, value, sort = TRUE)
+
+# Without swear words
+# sentiment_afinn <- tokenized_comments_custom %>%
+#   inner_join(afinn, by = "word") %>%
+#   mutate(method = "AFINN") %>%
+#   count(word, value, sort = TRUE)
 
 # Filter top 10 words for each sentiment value and create the plot
 sentiment_afinn %>%
@@ -377,7 +383,7 @@ sentiment_afinn %>%
   )
 
 # Save the plot
-# ggsave("figures/reddit_figures/reddit_comments_afinn_sentiment_grades.png")
+# ggsave("figures/reddit_figures/reddit_comments_afinn_sentiment_grades_with_swear.png")
 
 
 ### Group posts by subreddit to get overall subreddit sentiment with BING-------
