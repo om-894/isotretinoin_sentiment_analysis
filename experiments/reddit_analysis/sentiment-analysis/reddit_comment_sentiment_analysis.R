@@ -179,7 +179,7 @@ most_negative %>%
 # ggsave("figures/reddit_comments_negative_sentiments.png")
 
 # Filter the PMIDs with the most positive sentiments in decending order
-most_positive <- post_sentiment %>%
+most_positive <- post_comment_sentiment_bing %>%
   arrange(desc(sentiment)) %>%  # Sort by sentiment in descending order
   select(post_id, post_title, sentiment)  # Select the PMID and sentiment
 
