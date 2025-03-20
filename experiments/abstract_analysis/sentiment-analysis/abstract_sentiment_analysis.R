@@ -119,13 +119,12 @@ top_anger %>%
 # ggsave("figures/abstract_figures/abstract_top_anger_words.png")
 
 
+### Bing lexicon sentiment analysis---------------------------------------------
 
-
-
-### Bing lexicon sentiment analysis ###
 # Assign sentiment to words using the Bing lexicon
-sentiment_bing <- tidy_abstracts %>%
-  inner_join(bing, by = "word")
+sentiment_bing <- tokenized_abstracts %>%
+  inner_join(bing, by = "word") %>%
+  mutate(method = "BING")
 
 # Count positive and negative words for each abstract
 abstracts_sentiment <- sentiment_bing %>%
@@ -134,27 +133,25 @@ abstracts_sentiment <- sentiment_bing %>%
   spread(sentiment, n, fill = 0) %>%  # Convert to wide format
   mutate(sentiment = positive - negative)  # Calculate net sentiment
 
-# View sentiment scores for each abstract
-print(head(abstracts_sentiment))
-
 # Filter the PMIDs with the most negative sentiments in decending order
 most_negative <- abstracts_sentiment %>%
   arrange(sentiment) %>%  # Sort by sentiment
   select(pmid, sentiment)  # Select the PMID and sentiment
 
-# Filter and plot the top 10 most negative sentiment scores in descending order
+# shorten post title so it fits on the graph
 most_negative %>%
   head(10) %>%  # Take the 10 most negative abstracts
   ggplot(aes(x = reorder(as.factor(pmid), -sentiment), y = sentiment)) +
   geom_col(fill = "indianred3", color = "indianred3") +  # Red bars with black outlines
   coord_flip() +  # Flip coordinates for better readability
-  labs(title = "Top 10 Most Negative Sentiments in Abstracts",
-       x = "PMID",
+  labs(title = "Top 10 Most Negative Sentiments in posts comments",
+       x = "post title",
        y = "Net Sentiment Score") +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 8))  # Reduce font size
 
 # save the plot
-ggsave("figures/top_10_most_negative_sentiments.png")
+# ggsave("figures/reddit_posts_negative_sentiments.png")
 
 # Filter the PMIDs with the most positive sentiments in decending order
 most_positive <- abstracts_sentiment %>%
@@ -172,7 +169,8 @@ most_positive %>%
        y = "Net Sentiment Score") +
   theme_minimal()
 
-#### Analyzing Units Beyond Just Words ####
+
+### Analyzing Units Beyond Just Words-------------------------------------------
 # Tokenize text into sentences or chapters for sentiment analysis.
 
 # Sentiment using AFINN lexicon
