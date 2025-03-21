@@ -87,9 +87,6 @@ top_joy %>%
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
-# Save to figures folder
-# ggsave("figures/abstract_figures/abstract_top_joy_words.png")
-
 # Find the most common "anger" words in the comments
 anger_words <- tokenized_abstracts %>%
   inner_join(nrc_anger, by = "word") %>%  # Join with fear words
@@ -119,9 +116,6 @@ top_anger %>%
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
-# Save to figures folder
-# ggsave("figures/abstract_figures/abstract_top_anger_words.png")
-
 # Combine the joy and anger data
 combined_emotions <- bind_rows(
   top_joy %>% mutate(emotion = "Joy"),
@@ -148,6 +142,9 @@ combined_emotions %>%
     plot.margin = margin(10, 20, 10, 10),
     legend.position = "none"
   )
+
+# Save combined plot
+# ggsave("figures/abstract_figures/abstract_top_emotions_combined.png")
 
 
 ### Bing lexicon sentiment analysis---------------------------------------------
