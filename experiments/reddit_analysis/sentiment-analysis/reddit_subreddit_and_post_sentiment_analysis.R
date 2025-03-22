@@ -108,7 +108,7 @@ top_joy %>%
   )
 
 # Save to figures folder
-ggsave("figures/reddit_figures/reddit_posts_joy_words.png")
+# ggsave("figures/reddit_figures/reddit_posts_joy_words.png")
 
 # Find the most common "anger" words in the comments
 anger_words <- tokenized_posts %>%
@@ -140,7 +140,38 @@ top_anger %>%
   )
 
 # Save to figures folder
-ggsave("figures/reddit_figures/reddit_posts_anger_words.png")
+# ggsave("figures/reddit_figures/reddit_posts_anger_words.png")
+
+# ALTER THIS
+# Combine the joy and anger data
+combined_emotions <- bind_rows(
+  top_joy %>% mutate(emotion = "Joy"),
+  top_anger %>% mutate(emotion = "Anger")
+)
+
+# Create combined plot
+combined_emotions %>%
+  ggplot(aes(x = reorder(word, n), y = n, fill = emotion)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c("Anger" = "indianred2", "Joy" = "lightblue")) +
+  labs(x = "Word",
+       y = "Frequency") +
+  facet_wrap(~ emotion, ncol = 2, scales = "free_y") +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.ticks = element_line(color = "black"),
+    axis.ticks.length = unit(3, "pt"),
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10),
+    legend.position = "none"
+  )
+
+# Save combined plot
+# ggsave("figures/abstract_figures/abstract_top_emotions_combined.png")
 
 
 ### Bing lexicon sentiment analysis---------------------------------------------
