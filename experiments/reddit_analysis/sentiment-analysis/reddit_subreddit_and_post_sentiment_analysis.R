@@ -171,7 +171,7 @@ combined_emotions %>%
   )
 
 # Save combined plot
-# ggsave("figures/abstract_figures/abstract_top_emotions_combined.png")
+ggsave("figures/reddit_figures/sentiment_analysis_figures/posts_top_emotions_combined.png")
 
 
 ### Bing lexicon sentiment analysis---------------------------------------------
