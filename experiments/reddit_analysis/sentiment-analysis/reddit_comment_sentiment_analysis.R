@@ -142,6 +142,12 @@ anger_words %>%
 # Save to figures folder
 # ggsave("figures/reddit_figures/reddit_comments_anger_words.png")
 
+# View the most common anger words
+top_anger <- head(anger_words, 10)
+
+# View the most common joy words
+top_joy <- head(joy_words, 10)
+
 # POTENTIALLY ALTER THIS
 # Combine the joy and anger data
 combined_emotions <- bind_rows(
