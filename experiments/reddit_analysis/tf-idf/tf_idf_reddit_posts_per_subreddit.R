@@ -118,28 +118,22 @@ ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/zip_f_posts.png
 # We can calculate tf-idf to find words that are important to each novel.
 
 # Use bind_tf_idf() to calculate tf, idf, and tf-idf
-comment_words <- comment_words %>%
+post_words <- post_words %>%
   bind_tf_idf(word, subreddit, n)
 
-# View the data frame with tf-idf
-comment_words
-# The data frame now includes:
-# - tf: term frequency
-# - idf: inverse document frequency
-# - tf_idf: tf-idf score
 
 # Exploring High tf-idf Words --------------------------------------------------
 
 # Let's look at the words with the highest tf-idf scores in each subreddit.
 
 # View the words with highest tf-idf across all books
-comment_words %>%
+post_words %>%
   select(-total) %>%
   arrange(desc(tf_idf))
 
 # We can visualize the top 15 words with the highest tf-idf for each book.
 
-comment_words %>%
+post_words %>%
   group_by(subreddit) %>%
   arrange(desc(tf_idf)) %>%
   slice_max(tf_idf, n = 8) %>%  # Get top 8 words per book (doing this so graph looks better)
@@ -165,20 +159,20 @@ comment_words %>%
 # Create a custom stop words list
 custom_stop_words <- tibble(word = c("drive.google.com", "elta", "ms", "et", "al", 
                                      "pubmed.ncbi.nlm.nih.gov", "ci", "uc", 
-                                     "www.accessdata.fda.gov", "youuu"))
+                                     "www.accessdata.fda.gov", "youuu", "https", "170"))
 
 # Remove custom stop words from the data
-comment_words_clean <- comment_words %>%
+post_words_clean <- post_words %>%
   anti_join(custom_stop_words, by = "word")
 
 # Recalculate tf-idf
-comment_words_clean <- comment_words_clean %>%
+post_words_clean <- post_words_clean %>%
   bind_tf_idf(word, subreddit, n)
 
-comment_words_clean %>%
+post_words_clean %>%
   group_by(subreddit) %>%
   arrange(desc(tf_idf)) %>%
-  slice_max(tf_idf, n = 8) %>%  # Get top 8 words per book (doing this so graph looks better)
+  slice_head(n = 10) %>%  # Get top 8 words per book (doing this so graph looks better)
   ungroup() %>%
   mutate(word = reorder_within(word, tf_idf, subreddit)) %>%  # Reorder words within each book
   ggplot(aes(word, tf_idf, fill = subreddit)) +
@@ -200,4 +194,10 @@ comment_words_clean %>%
   )
 
 # save the figure
-ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/tf_idf_unigrams_comments.png")
+ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/tf_idf_unigrams_posts.png")
+
+
+
+
+
+
