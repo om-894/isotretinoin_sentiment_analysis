@@ -78,17 +78,6 @@ bigrams_united_counts %>%
   )
 # MAKE IT GREYSCALE!!
 
-# Analysing Trigrams -----------------------------------------------------------
-
-comment_trigrams <- df_combined %>%
-  unnest_tokens(trigram, comments_combined, token = "ngrams", n = 3) %>%
-  group_by(subreddit, post_body) %>%
-  separate(trigram, c("word1", "word2", "word3"), sep = " ") %>%
-  filter(!word1 %in% stop_words$word,
-         !word2 %in% stop_words$word,
-         !word3 %in% stop_words$word) %>%
-  count(word1, word2, word3, sort = TRUE)
-
 # Analyzing Bigrams ------------------------------------------------------------
 
 # Calculate tf-idf for bigrams
@@ -152,9 +141,21 @@ bigram_tf_idf %>%
   geom_col(show.legend = FALSE) +
   labs(x = NULL, y = "tf-idf") +
   facet_wrap(~subreddit, ncol = 2, scales = "free") +
-  coord_flip()
-# Figure looks good and regex has worked well. I will manually remove the remaining
-# artifacts and less meaningful words myself at a later date.
+  coord_flip() +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# save the figure
+ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/tf_idf_bigrams.png")
 
 # Using Bigrams to Provide Context in Sentiment Analysis -----------------------
 
