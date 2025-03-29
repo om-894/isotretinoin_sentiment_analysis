@@ -275,7 +275,7 @@ word_cors %>%
   geom_node_text(aes(label = name), repel = TRUE) +
   theme_void()
 
-# Pairs of words in "Pride and Prejudice"Accutane" subreddit that show at least 
+# Pairs of words in Accutane" subreddit that show at least 
 # a 0.5 correlation of appearing within the same subreddit post
 
 
