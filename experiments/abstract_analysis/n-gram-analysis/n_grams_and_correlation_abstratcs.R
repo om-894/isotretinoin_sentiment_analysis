@@ -86,26 +86,20 @@ bigrams_united_counts %>%
   coord_flip() +
   theme_minimal() +
   theme(
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank(),
-    axis.text = element_text(size = 10),
-    plot.title = element_text(size = 12)
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
 # 'severe acne' is quite prevalent in 2006 and later. The word 'isotretinoin' also
 # Appears in both time periods, but more so in 2006 and later.
 # '13 cis' relates to retinoic acid. 'mg kg' relates to dosage.
 
-# Analysing Trigrams -----------------------------------------------------------
-
-abstract_trigrams <- abstracts_data %>%
-  unnest_tokens(trigram, abstract, token = "ngrams", n = 3) %>%
-  group_by(period) %>%
-  separate(trigram, c("word1", "word2", "word3"), sep = " ") %>%
-  filter(!word1 %in% stop_words$word,
-         !word2 %in% stop_words$word,
-         !word3 %in% stop_words$word) %>%
-  count(word1, word2, word3, sort = TRUE)
 
 # Analyzing Bigrams ------------------------------------------------------------
 
