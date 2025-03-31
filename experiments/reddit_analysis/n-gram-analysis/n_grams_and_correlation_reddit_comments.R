@@ -134,7 +134,7 @@ bigram_tf_idf <- bigrams_united_clean %>%
 # Plotting the highest tf-idf bigrams for each book
 bigram_tf_idf %>%
   group_by(subreddit) %>%
-  slice_max(tf_idf, n = 7, with_ties = FALSE) %>%
+  slice_head(n = 10) %>%
   ungroup %>%
   mutate(bigram = reorder(bigram, tf_idf)) %>%
   ggplot(aes(bigram, tf_idf, fill = subreddit)) +
