@@ -133,7 +133,20 @@ ggplot(freq_by_rank, aes(rank, term_frequency, color = period)) +
   scale_x_log10() +
   scale_y_log10() +
   labs(x = "Rank", y = "Term Frequency") +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# Save the figure
+ggsave("figures/abstract_figures/n_gram_and_term_frequency_figures/zip_f_abstracts.png")
 
 # The line of best fit in your graph shows that the term frequencies generally follow 
 # Zipf's Law, with a consistent inverse relationship between rank and frequency across 
@@ -224,7 +237,7 @@ abstract_words_clean %>%
   mutate(word = reorder_within(word, tf_idf, period)) %>%
   ggplot(aes(word, tf_idf, fill = period)) +
   geom_col(show.legend = FALSE) +
-  labs(x = NULL, y = "beta") +
+  labs(x = NULL, y = "tf-idf") +
   facet_wrap(~period, ncol = 2, scales = "free", labeller = label_both) +
   scale_x_reordered() +
   coord_flip() +
@@ -237,7 +250,12 @@ abstract_words_clean %>%
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
+# Save the figure
+ggsave("figures/abstract_figures/n_gram_and_term_frequency_figures/tf_idf_unigrams_abstracts.png")
+
 # Figure should be final
+
+# ipledge YAY!!
 
 # osdi relates to Ocular Surface Disease Index, is a 12-item questionnaire designed 
 # to provide a rapid assessment of the symptoms of ocular irritation consistent with 
