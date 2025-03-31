@@ -203,7 +203,9 @@ comment_words %>%
 # Create a custom stop words list
 custom_stop_words <- tibble(word = c("drive.google.com", "elta", "ms", "et", "al", 
                                      "pubmed.ncbi.nlm.nih.gov", "ci", "uc", 
-                                     "www.accessdata.fda.gov", "youuu"))
+                                     "www.accessdata.fda.gov", "youuu", "0135608ddc13",
+                                     "018662s059lbl.pdf", "4cd2", "494e", "82e4",
+                                     "d10be6bb", "fis.fda.gov"))
 
 # Remove custom stop words from the data
 comment_words_clean <- comment_words %>%
@@ -216,7 +218,7 @@ comment_words_clean <- comment_words_clean %>%
 comment_words_clean %>%
   group_by(subreddit) %>%
   arrange(desc(tf_idf)) %>%
-  slice_max(tf_idf, n = 8) %>%  # Get top 8 words per book (doing this so graph looks better)
+  slice_head(n = 10) %>%
   ungroup() %>%
   mutate(word = reorder_within(word, tf_idf, subreddit)) %>%  # Reorder words within each book
   ggplot(aes(word, tf_idf, fill = subreddit)) +

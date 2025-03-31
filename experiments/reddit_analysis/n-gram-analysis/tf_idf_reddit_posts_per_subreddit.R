@@ -136,7 +136,7 @@ post_words %>%
 post_words %>%
   group_by(subreddit) %>%
   arrange(desc(tf_idf)) %>%
-  slice_max(tf_idf, n = 8) %>%  # Get top 8 words per book (doing this so graph looks better)
+  slice_head(n = 10) %>%
   ungroup() %>%
   mutate(word = reorder_within(word, tf_idf, subreddit)) %>%  # Reorder words within each book
   ggplot(aes(word, tf_idf, fill = subreddit)) +
@@ -172,7 +172,7 @@ post_words_clean <- post_words_clean %>%
 post_words_clean %>%
   group_by(subreddit) %>%
   arrange(desc(tf_idf)) %>%
-  slice_head(n = 10) %>%  # Get top 8 words per book (doing this so graph looks better)
+  slice_head(n = 10) %>%
   ungroup() %>%
   mutate(word = reorder_within(word, tf_idf, subreddit)) %>%  # Reorder words within each book
   ggplot(aes(word, tf_idf, fill = subreddit)) +
