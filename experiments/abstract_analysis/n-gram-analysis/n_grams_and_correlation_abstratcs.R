@@ -164,19 +164,21 @@ bigram_tf_idf %>%
   geom_col(show.legend = FALSE) +
   labs(x = NULL, y = "tf-idf") +
   facet_wrap(~period, ncol = 2, scales = "free") +
-  coord_flip()
+  coord_flip() +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
 
-# 'Maternal plasma' is crucial in the pharmacokinetics of isotretinoin, as the drug binds 
-# extensively to plasma proteins and circulates within the maternal bloodstream. 
-# This allows isotretinoin to cross the placenta, exposing the fetus to its highly 
-# teratogenic effects. The drug’s persistence in maternal plasma, with a half-life of 
-# 10–20 hours and detectable metabolites for weeks, underscores the need for strict 
-# pregnancy prevention before, during, and after treatment.
-
-# 'Folic acid' levels are decreased when taking isotretinoin. 
-# There may have been more experiments done on this after 2006
-
-# 'mm hg' relates to blood pressure. Potentially less focus on this post 2006.
+# save the figure
+ggsave("figures/abstract_figures/n_gram_and_term_frequency_figures/tf_idf_bigrams_abstracts.png")
 
 # Using Bigrams to Provide Context in Sentiment Analysis -----------------------
 
