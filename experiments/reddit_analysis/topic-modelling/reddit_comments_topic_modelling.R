@@ -130,7 +130,7 @@ ggplot(perplexities, aes(x = k, y = perplexity)) +
 
 # Use LDA() function from topicmodels package, setting k = 3 to create a 3-topic LDA model
 # set a seed so that the output of the model is predictable
-reddit_lda <- LDA(df_dtm, k = 3, control = list(seed = 1234))
+reddit_lda <- LDA(df_dtm, k = 4, control = list(seed = 1234))
 
 # Notes that fitting the model is the easy part - now need to explore and interpret the 
 ## model using the tidy approach
