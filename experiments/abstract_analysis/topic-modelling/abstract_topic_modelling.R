@@ -103,33 +103,6 @@ df_dtm <- df_tokens %>%
   count(title, word, sort = TRUE) %>%
   cast_dtm(document = title, term = word, value = n)
 
-# Assess different numbers of topics -------------------------------------------
-
-# This section takes a while to run, so can skip running if need be.
-# based on the graph, 4 or 5 topics seems the best k value to use.
-
-# Try different numbers of topics for model selection
-k_values <- c(2, 3, 4, 5, 6, 7, 8, 9, 10)
-perplexities <- data.frame(k = k_values, perplexity = NA)
-
-for(i in seq_along(k_values)) {
-  model <- LDA(df_dtm, k = k_values[i], control = list(seed = 1234))
-  perplexities$perplexity[i] <- perplexity(model)
-}
-
-# Plot perplexity scores
-ggplot(perplexities, aes(x = k, y = perplexity)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Model Perplexity by Number of Topics",
-       x = "Number of Topics (k)",
-       y = "Perplexity")
-
-# Based on perplexity scores, the model with 3 topics seems to be the best choice
-# While the perplexity continues to decrease after 5 topics, the rate of improvement 
-# becomes much more gradual
-
-# We will assess the differences between using 4 and 5 topics.
 
 # Fit an LDA model -------------------------------------------------------------
 
