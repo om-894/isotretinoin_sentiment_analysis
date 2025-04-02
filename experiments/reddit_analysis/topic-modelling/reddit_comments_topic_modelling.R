@@ -162,22 +162,23 @@ reddit_top_terms %>%
   facet_wrap(~ topic, scales = "free") +
   coord_flip() +
   scale_x_reordered() +
-  labs(
-    title = "Top Terms in Each Topic",
-    x = NULL,
+  labs(x = "term",
     y = expression(beta)
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(face = "bold"),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
-# Topic 1 (Red): Appears to be about personal experiences with Accutane treatment, 
-# containing terms like "accutane," "skin," "acne," "amazing," and emotional 
-# expressions like "happy" and "wow."
-
-# Topic 2 (Green): Seems to focus on medical/technical aspects of treatment, with 
-# terms like "lithium," "isotretinoin" (which is the generic name for Accutane), 
-# "beta," "treatment," and other medical terminology.
-
-# Topic 3 (Blue): Appears to be about side effects and treatment outcomes, with 
-# terms like "accutane," "effects," "drug," "pain," and "issues."
+# save the figure
+ggsave("figures/reddit_figures/topic_modeling_figures/top_terms_per_topic.png")
 
 
 # Analyze document-topic probabilities (Gamma) ---------------------------------
