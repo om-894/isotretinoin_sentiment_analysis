@@ -227,6 +227,9 @@ corrplot(topic_correlations, method = "color",
          tl.col = "black", tl.srt = 45,
          diag = FALSE)
 
+# save the figure
+ggsave("figures/reddit_figures/topic_modeling_figures/topic_correlations_comments.png")
+
 # The negative correlations across all topic pairs suggest that these topics are 
 # relatively distinct from each other, which is desirable in topic modeling.
 
