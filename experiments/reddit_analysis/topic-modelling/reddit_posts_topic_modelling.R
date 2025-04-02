@@ -12,29 +12,33 @@ library(topicmodels)  # For topic modeling
 library(corrplot)     # For correlation plots
 library(plotly)       # For interactive plots
 
-# get the Reddit posts and comments dataset
+### get the Reddit posts and comments dataset ------------------------------------
 
-reddit_data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts.csv")
+# Load the dataset
+data <- read_csv("data-raw/reddit-posts-and-comments/all_subreddits_reddit_posts.csv")
 
-# I want to also keep the title of the post but just combine the comments. 
-# Combine comments for each post_id and keep the post title and text
-df_combined <- reddit_data %>%
-  group_by(subreddit, post_id, post_title, post_body) %>%  # CHANGE THIS TO post_body ONLY
-  summarise(comments_combined = paste(comment, collapse = " "), .groups = "drop")
+# In this script moved the code that drops 'NA' values above df_combined to prevent 
+# multiple NA values appearing in the same column.
+data <- data %>%
+  filter(post_body != "NA")  # Drop posts with no post_body
 
-# Tokenize the text and remove stopwords ---------------------------------------
+# I want to also keep the title of the post and the subreddit that it belongs to. 
+# i need to drop the comments column.
 
-# Additional preprocessing
-df_tokens <- df_combined %>%
-  mutate(full_text = paste(post_title, post_body, comments_combined, sep = " ")) %>%
-  unnest_tokens(word, full_text) %>%
-  anti_join(stop_words, by = "word") %>%
-  filter(!str_detect(word, "^[0-9]+$")) %>%
-  filter(nchar(word) > 2) %>%
-  # Add these steps:
-  filter(!word %in% c("amp", "http", "https", "com", "www")) %>% # Remove common web artifacts
-  filter(!str_detect(word, "^[[:punct:]]+$")) %>% # Remove punctuation-only tokens
-  mutate(word = str_replace_all(word, "[[:punct:]]", "")) # Clean remaining punctuation
+# The posts repeat themselves, so also only have one of each post.
+df_posts <- data %>%
+  select(subreddit, post_id, post_title, post_body) %>%  # Keep required columns
+  distinct(post_body, .keep_all = TRUE)  # Remove duplicate posts
+
+
+### Tokenize the posts into words and perform sentiment analysis----------------
+
+# Tokenize the posts into words
+tokenized_posts <- df_posts %>%
+  unnest_tokens(output = word, input = post_body)  # Tokenize the post body into words
+
+# View the tokenized data
+print(head(tokenized_posts))
 
 
 
