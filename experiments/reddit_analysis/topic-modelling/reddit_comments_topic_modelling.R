@@ -213,12 +213,17 @@ ggplot(doc_topics, aes(gamma)) +
 # The similar distribution patterns across all three topics suggests relatively 
 # balanced topic assignments in the corpus
 
-# Topic correlation analysis ---------------------------------------------------
+
+### Topic correlation analysis -------------------------------------------------
 
 topic_correlations <- doc_topics %>%
   spread(topic, gamma) %>%
   select(-document) %>%
   cor()
+
+# Create a PNG device before plotting
+png("figures/reddit_figures/topic_modeling_figures/topic_correlations_comments.png",
+    width = 800, height = 800, res = 150)
 
 # Visualize topic correlations
 corrplot(topic_correlations, method = "color",
@@ -227,16 +232,8 @@ corrplot(topic_correlations, method = "color",
          tl.col = "black", tl.srt = 45,
          diag = FALSE)
 
-# save the figure
-ggsave("figures/reddit_figures/topic_modeling_figures/topic_correlations_comments.png")
-
-# The negative correlations across all topic pairs suggest that these topics are 
-# relatively distinct from each other, which is desirable in topic modeling.
-
-# The strongest distinction is between Topics 1 and 3 (-0.70), indicating these 
-# topics are most different from each other. Topics 1 and 2 show moderate distinction (-0.43)
-# Topics 2 and 3 have the weakest negative correlation (-0.35), suggesting these topics 
-# might have some overlap in content
+# Close the device to save the file
+dev.off()
 
 
 
