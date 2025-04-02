@@ -238,26 +238,5 @@ ggsave("figures/reddit_figures/topic_modeling_figures/topic_correlations_comment
 # Topics 2 and 3 have the weakest negative correlation (-0.35), suggesting these topics 
 # might have some overlap in content
 
-# Print top words for inspection
-top_words <- df_tokens %>%
-  count(word, sort = TRUE) %>%
-  head(50)
-
-print(top_words)
-
-# Print model summary statistics
-cat("\nModel Statistics:\n")
-cat("Number of documents:", nrow(doc_topics) / 3, "\n")
-cat("Number of terms:", ncol(df_dtm), "\n")
-cat("Model perplexity:", perplexity(reddit_lda), "\n")
-
-
-# Ideas:
-# Three topic model for comments
-# Two topic model for posts - compare topics between posts and comments
-# Four topic model for abstracts
-
-# Or just use three for each. I will decide later....
-
 
 
