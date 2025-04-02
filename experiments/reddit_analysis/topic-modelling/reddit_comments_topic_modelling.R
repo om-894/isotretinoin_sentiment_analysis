@@ -178,7 +178,7 @@ reddit_top_terms %>%
   )
 
 # save the figure
-ggsave("figures/reddit_figures/topic_modeling_figures/top_terms_per_topic.png")
+ggsave("figures/reddit_figures/topic_modeling_figures/top_terms_per_topic_comments.png")
 
 
 # Analyze document-topic probabilities (Gamma) ---------------------------------
