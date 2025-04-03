@@ -136,7 +136,7 @@ reddit_top_terms %>%
 ggsave("figures/reddit_figures/topic_modeling_figures/top_terms_per_topic_posts.png")
 
 
-# Analyze document-topic probabilities (Gamma) ---------------------------------
+### Analyze document-topic probabilities (Gamma) ---------------------------------
 
 doc_topics <- tidy(reddit_lda, matrix = "gamma")
 
