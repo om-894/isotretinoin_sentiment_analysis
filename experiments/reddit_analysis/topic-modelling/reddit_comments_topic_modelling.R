@@ -18,7 +18,7 @@ library(plotly)       # For interactive plots
 ## of topics and each topic as a mixture of words. Allows documents to overlap each other
 ## in terms of content, rather than being separated into discrete groups.
 
-# Latent Dirichlet allocation ---------------------------------------------
+### Latent Dirichlet allocation ---------------------------------------------
 
 # Two main principles
 # Every document is a mixture of topics: e.g., "Document 1 is 90% topic A and 10%
@@ -40,7 +40,7 @@ df_combined <- reddit_data %>%
   summarise(comments_combined = paste(comment, collapse = " "), .groups = "drop")
 
 
-# Tokenize the text and remove stopwords ---------------------------------------
+### Tokenize the text and remove stopwords ---------------------------------------
 
 # Additional preprocessing
 df_tokens <- df_combined %>%
@@ -95,13 +95,13 @@ df_tokens <- df_combined %>%
   filter(!str_detect(word, "^[a-z]{1,2}$"))    # Remove 1-2 letter words
 
   
-# Create a Document-Term Matrix (DTM) ------------------------------------------
+### Create a Document-Term Matrix (DTM) ------------------------------------------
 
 df_dtm <- df_tokens %>%
   count(post_id, word, sort = TRUE) %>%
   cast_dtm(document = post_id, term = word, value = n)
 
-# Assess different numbers of topics -------------------------------------------
+### Assess different numbers of topics -------------------------------------------
 
 # Try different numbers of topics for model selection
 k_values <- c(2, 3, 4, 5, 6, 7, 8, 9, 10)
@@ -126,7 +126,7 @@ ggplot(perplexities, aes(x = k, y = perplexity)) +
 
 # We will assess the differences between using 4 and 5 topics.
 
-# Fit an LDA model -------------------------------------------------------------
+### Fit an LDA model -------------------------------------------------------------
 
 # Use LDA() function from topicmodels package, setting k = 3 to create a 3-topic LDA model
 # set a seed so that the output of the model is predictable
@@ -135,7 +135,7 @@ reddit_lda <- LDA(df_dtm, k = 4, control = list(seed = 1234))
 # Notes that fitting the model is the easy part - now need to explore and interpret the 
 ## model using the tidy approach
 
-# Examine Topic-Term Probability (Beta) ----------------------------------------
+### Examine Topic-Term Probability (Beta) ----------------------------------------
 
 # Use tidy() from tidytext to extract per-topic-per-word probabilities from the model
 reddit_topics <- tidy(reddit_lda, matrix = "beta")
@@ -181,7 +181,7 @@ reddit_top_terms %>%
 ggsave("figures/reddit_figures/topic_modeling_figures/top_terms_per_topic_comments.png")
 
 
-# Analyze document-topic probabilities (Gamma) ---------------------------------
+### Analyze document-topic probabilities (Gamma) ---------------------------------
 
 doc_topics <- tidy(reddit_lda, matrix = "gamma")
 
