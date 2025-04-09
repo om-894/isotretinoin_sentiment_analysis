@@ -1,4 +1,12 @@
 
+
+# This script does not work. It was intended to retrieve reddit but i used python
+# instead. I am leaving it here for reference. It is not used in the analysis.
+
+
+
+### load necessary packages ----------------------------------------------------
+
 library(RedditExtractoR)
 library(tidyverse)
 
