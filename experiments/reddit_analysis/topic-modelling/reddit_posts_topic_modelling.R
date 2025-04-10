@@ -4,7 +4,6 @@ library(dplyr)        # For data manipulation
 library(stringr)      # For string operations
 library(tidyr)        # For data tidying
 library(ggplot2)      # For data visualization
-library(wordcloud)    # For creating word clouds
 library(reshape2)     # For reshaping data
 library(scales)       # For scaling in plots
 library(readr)        # For reading data
