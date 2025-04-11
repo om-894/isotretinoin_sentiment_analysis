@@ -498,3 +498,6 @@ ggplot(top_posts_afinn, aes(x = reorder(post_id, sentiment), y = sentiment, fill
 # ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_subreddits_top_sentiments_comments_afinn.png")
 
 
+
+
+
