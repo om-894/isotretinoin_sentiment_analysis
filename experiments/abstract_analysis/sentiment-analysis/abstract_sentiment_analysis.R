@@ -144,7 +144,7 @@ combined_emotions %>%
   )
 
 # Save combined plot
-# ggsave("figures/abstract_figures/abstract_top_emotions_combined.png")
+ggsave("figures/abstract_figures/abstract_top_emotions_combined.png", width = 10, height = 8, dpi = 600, bg = "white")
 
 
 ### Bing lexicon sentiment analysis---------------------------------------------
