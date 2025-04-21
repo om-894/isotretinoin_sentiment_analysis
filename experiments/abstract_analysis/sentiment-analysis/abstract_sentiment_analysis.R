@@ -444,7 +444,7 @@ sentiment_afinn %>%
   )
 
 # save the figure
-ggsave("figures/abstract_figures/abstract_afinn_sentiment_grades.png", width = 10, height = 8, dpi = 600, bg = "white")
+ggsave("figures/abstract_figures/abstract_afinn_sentiment_grades.png", width = 13, height = 8, dpi = 600, bg = "white")
 
 
 
