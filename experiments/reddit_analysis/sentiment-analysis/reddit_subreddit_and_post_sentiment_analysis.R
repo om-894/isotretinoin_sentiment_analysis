@@ -450,11 +450,14 @@ ggplot(top_posts_afinn, aes(x = reorder(post_id, sentiment), y = sentiment, fill
     axis.ticks.x = element_line(color = "black"),
     axis.ticks.length = unit(3, "pt"),
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10)
   )
 
 # Save the plot
-# ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_subreddits_top_post_sentiment_afinn.png")
+ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_subreddits_top_post_sentiment_afinn.png", 
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 
