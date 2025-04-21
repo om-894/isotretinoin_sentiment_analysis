@@ -200,59 +200,6 @@ most_positive %>%
   theme_minimal()
 
 
-### Analyzing Units Beyond Just Words-------------------------------------------
-# Tokenize text into sentences or chapters for sentiment analysis.
-
-# Sentiment using AFINN lexicon
-sentiment_afinn <- tidy_abstracts %>%
-  inner_join(afinn, by = "word") %>%
-  group_by(pmid) %>%                  # Group by abstract
-  summarise(sentiment = sum(value)) %>%
-  mutate(method = "AFINN")
-
-# Combine Bing and NRC sentiments by grouping by `pmid`
-sentiment_bing_nrc <- bind_rows(sentiment_bing, sentiment_nrc) %>%
-  group_by(method, pmid) %>%               # Group by sentiment method and article
-  count(sentiment) %>%                     # Count occurrences of each sentiment
-  spread(sentiment, n, fill = 0) %>%       # Convert to wide format (positive/negative)
-  mutate(sentiment = positive - negative)  # Calculate net sentiment
-
-
-# Sentiment using Bing and NRC lexicons
-sentiment_bing <- tidy_abstracts %>%
-  inner_join(bing, by = "word") %>%
-  mutate(method = "Bing")
-
-sentiment_nrc <- tidy_abstracts %>%
-  inner_join(nrc %>% filter(sentiment %in% c("positive", "negative")), by = "word") %>%
-  mutate(method = "NRC")
-
-# Combine all sentiments (AFINN, Bing, NRC) into one dataset
-sentiments_combined <- bind_rows(
-  sentiment_afinn,         # Ensure AFINN is grouped by pmid
-  sentiment_bing_nrc %>% select(pmid, sentiment, method)  # Select consistent columns
-)
-
-# Plot the sentiments for each lexicon (method)
-ggplot(sentiments_combined, aes(x = as.factor(pmid), y = sentiment, fill = method)) +
-  geom_col(show.legend = FALSE) +                 # Use columns to represent sentiment scores
-  facet_wrap(~method, ncol = 1, scales = "free_y") +  # Facet by sentiment method
-  labs(title = "Sentiment Analysis by Lexicon",
-       x = "Article (PMID)",
-       y = "Net Sentiment Score") +
-  theme_minimal() +
-  theme(axis.text.x = element_blank(),            # Hide x-axis labels for clarity
-        axis.ticks.x = element_blank())           # Remove x-axis ticks
-
-# All three lexicons appear to have similar sentiment scores for the articles.
-# The sentiment scores are relatively balanced, with a mix of positive and negative sentiments
-# relative trajectories across the abstracts, displaying dips and peaks at about 
-# the same points. Therefore, despite their differences in absolute measurements, 
-# all three lexicons agree on the overall trends in sentiment.
-
-# save the plot
-ggsave("figures/sentiment_analysis_by_lexicon.png")
-
 ### Most Positive and Negative Words contribution for BING----------------------
 
 # Identify words that contribute most to positive and negative sentiment
@@ -458,8 +405,46 @@ ggplot(top_abstracts_afinn, aes(x = reorder(pmid, sentiment), y = sentiment, fil
 ggsave("figures/abstract_figures/top_abstract_sentiment_afinn.png", width = 10, height = 8, dpi = 600, bg = "white")
 
 
+### AFINN lexicon sentiment analysis--------------------------------------------
 
+# Calculate word frequency and sentiment value
+sentiment_afinn <- tokenized_abstracts %>%
+  inner_join(afinn, by = "word") %>%
+  mutate(method = "AFINN") %>%
+  count(word, value, sort = TRUE)
 
+# Without swear words
+# sentiment_afinn <- tokenized_comments_custom %>%
+#   inner_join(afinn, by = "word") %>%
+#   mutate(method = "AFINN") %>%
+#   count(word, value, sort = TRUE)
+
+# Filter top 10 words for each sentiment value and create the plot
+sentiment_afinn %>%
+  group_by(value) %>%
+  slice_max(n, n = 10) %>%
+  ungroup() %>%
+  ggplot(aes(x = n, y = reorder(word, n), fill = value)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ value, scales = "free_y") +
+  labs(x = "Contribution to Sentiment", y = NULL) +
+  theme_minimal() +
+  theme(strip.text = element_text(size = 10)) + 
+  theme(
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
+    axis.ticks.length = unit(3, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.text = element_text(size = 9),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+  )
+
+# save the figure
+ggsave("figures/abstract_figures/abstract_afinn_sentiment_grades.png", width = 10, height = 8, dpi = 600, bg = "white")
 
 
 
