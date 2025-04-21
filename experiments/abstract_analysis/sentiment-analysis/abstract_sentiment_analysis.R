@@ -138,8 +138,8 @@ combined_emotions %>%
     axis.ticks = element_line(color = "black"),
     axis.ticks.length = unit(3, "pt"),
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
-    axis.text.x = element_text(size = 12),  # Increased x-axis text size
-    axis.text.y = element_text(size = 12),  # Increased y-axis text size
+    axis.text.x = element_text(size = 10),  # Increased x-axis text size
+    axis.text.y = element_text(size = 10),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10),
     legend.position = "none"
