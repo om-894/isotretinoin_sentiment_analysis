@@ -429,7 +429,7 @@ abstracts_sentiment_afinn <- tokenized_abstracts_custom %>%
   mutate(method = "AFINN")
 
 # get top 10 posts by sentiment for each subreddit
-top_abstracts_afinn <- post_sentiment_afinn %>%
+top_abstracts_afinn <- abstracts_sentiment_afinn %>%
   group_by(period) %>%
   top_n(10, wt = abs(sentiment)) %>%  # Top 10 by absolute sentiment score
   ungroup()
@@ -446,6 +446,8 @@ ggplot(top_abstracts_afinn, aes(x = reorder(pmid, sentiment), y = sentiment, fil
     axis.line = element_line(color = "black"),
     axis.ticks.y = element_line(color = "black"),
     axis.ticks.x = element_line(color = "black"),
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     axis.ticks.length = unit(3, "pt"),
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
     strip.text = element_text(face = "bold"),
@@ -453,7 +455,7 @@ ggplot(top_abstracts_afinn, aes(x = reorder(pmid, sentiment), y = sentiment, fil
   )
 
 # Save the plot
-ggsave("figures/abstract_figures/top_abstract_sentiment_afinn.png")
+ggsave("figures/abstract_figures/top_abstract_sentiment_afinn.png", width = 10, height = 8, dpi = 600, bg = "white")
 
 
 
