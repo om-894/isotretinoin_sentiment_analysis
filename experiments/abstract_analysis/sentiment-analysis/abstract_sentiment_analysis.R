@@ -373,6 +373,8 @@ bing_word_counts_custom %>%
     axis.line = element_line(color = "black"), # Add black outline to axis
     axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
     strip.text = element_text(face = "bold"),
@@ -380,7 +382,7 @@ bing_word_counts_custom %>%
   )
 
 # Save the plot
-ggsave("figures/abstract_figures/abstracts_bing_overall_sentiment.png")
+ggsave("figures/abstract_figures/abstracts_bing_overall_sentiment.png", width = 10, height = 8, dpi = 600, bg = "white")
 
 
 ### Group abstracts by year to get overall abstract sentiment with BING---------
