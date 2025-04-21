@@ -165,13 +165,15 @@ combined_emotions %>%
     axis.ticks = element_line(color = "black"),
     axis.ticks.length = unit(3, "pt"),
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10),
     legend.position = "none"
   )
 
 # Save combined plot
-ggsave("figures/reddit_figures/sentiment_analysis_figures/posts_top_emotions_combined.png")
+ggsave("figures/reddit_figures/sentiment_analysis_figures/posts_top_emotions_combined.png", width = 10, height = 8, dpi = 600, bg = "white")
 
 
 ### Bing lexicon sentiment analysis---------------------------------------------
@@ -232,46 +234,6 @@ most_positive %>%
        y = "Net Sentiment Score") +
   theme_minimal() +
   theme(axis.text.y = element_text(size = 8))
-
-
-### Analyzing Units Beyond Just Words-------------------------------------------
-# Tokenize text into sentences or chapters for sentiment analysis.
-
-# Sentiment using AFINN lexicon
-sentiment_afinn <- tokenized_posts %>%
-  inner_join(afinn, by = "word") %>%
-  group_by(post_id, post_title) %>%                  # Group by abstract
-  summarise(sentiment = sum(value)) %>%
-  mutate(method = "AFINN")
-
-# Combine Bing and NRC sentiments by grouping by `post_id`
-sentiment_bing_nrc <- bind_rows(sentiment_bing, sentiment_nrc) %>%
-  group_by(method, post_id, post_title) %>%               # Group by sentiment method and article
-  count(sentiment) %>%                     # Count occurrences of each sentiment
-  spread(sentiment, n, fill = 0) %>%       # Convert to wide format (positive/negative)
-  mutate(sentiment = positive - negative)  # Calculate net sentiment
-
-
-# Combine all sentiments (AFINN, Bing, NRC) into one dataset
-sentiments_combined <- bind_rows(
-  sentiment_afinn,         # Ensure AFINN is grouped by pmid
-  sentiment_bing_nrc %>% select(post_id, post_title, sentiment, method)  # Select consistent columns
-)
-
-# Plot the sentiments for each lexicon (method)
-ggplot(sentiments_combined, aes(x = as.factor(post_id), y = sentiment, fill = method)) +
-  geom_col(show.legend = FALSE) +                 # Use columns to represent sentiment scores
-  facet_wrap(~method, ncol = 1, scales = "free_y") +  # Facet by sentiment method
-  labs(title = "Sentiment Analysis by Lexicon",
-       x = "Subreddit post (post id)",
-       y = "Net Sentiment Score") +
-  theme_minimal() +
-  theme(axis.text.x = element_blank(),            # Hide x-axis labels for clarity
-        axis.ticks.x = element_blank())           # Remove x-axis ticks
-
-# All three lexicons seem to differ. NRC sees one post with a neutral sentiment but 
-# BING and AFINN lexicons see it as highly negative
-# The sentiment scores are relatively balanced, with a mix of positive and negative sentiments
 
 
 ### Most Positive and Negative Words contribution for BING----------------------
@@ -361,7 +323,7 @@ bing_word_counts_custom %>%
   geom_col(show.legend = FALSE) +         # Use columns to represent counts
   facet_wrap(~sentiment, scales = "free_y") +  # Facet by sentiment
   coord_flip() +                          # Flip coordinates for readability
-  labs(x = NULL,
+  labs(x = "Word",
        y = "contribution to sentiment") +
   theme_minimal() +
   theme(
@@ -370,13 +332,16 @@ bing_word_counts_custom %>%
     axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
-    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
 # Save the plot
-# ggsave("figures/reddit_figures/reddit_posts_bing_overall_sentiment.png")
+ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_posts_bing_overall_sentiment.png", 
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 
 ### AFINN lexicon sentiment analysis--------------------------------------------
@@ -411,12 +376,15 @@ sentiment_afinn %>%
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.length = unit(3, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(size = 9),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
 # Save the plot
-# ggsave("figures/reddit_figures/reddit_posts_afinn_sentiment_grades_with_swear.png")
+ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_posts_afinn_sentiment_grades.png", 
+       width = 13, height = 8, dpi = 600, bg = "white")
 
 
 ### Group posts by subreddit to get overall subreddit sentiment with BING-------
@@ -442,12 +410,15 @@ ggplot(top_posts_bing, aes(x = reorder(post_id, sentiment), y = sentiment, fill 
     axis.ticks.x = element_line(color = "black"),
     axis.ticks.length = unit(3, "pt"),
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10)
   )
 
 # Save the plot
-ggsave("figures/reddit_figures/reddit_subreddits_top_post_sentiments_bing.png")
+ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_subreddits_top_post_sentiments_bing.png", 
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 
 ### Group posts by subreddit to get overall subreddit sentiment with AFINN------
