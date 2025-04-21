@@ -427,7 +427,7 @@ sentiment_afinn %>%
   ggplot(aes(x = n, y = reorder(word, n), fill = value)) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~ value, scales = "free_y") +
-  labs(x = "Contribution to Sentiment", y = NULL) +
+  labs(x = "Contribution to Sentiment", y = "Word") +
   theme_minimal() +
   theme(strip.text = element_text(size = 10)) + 
   theme(
