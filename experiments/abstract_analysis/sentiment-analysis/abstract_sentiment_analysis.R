@@ -407,6 +407,8 @@ ggplot(top_abstracts_bing, aes(x = reorder(pmid, sentiment), y = sentiment, fill
     axis.line = element_line(color = "black"),
     axis.ticks.y = element_line(color = "black"),
     axis.ticks.x = element_line(color = "black"),
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     axis.ticks.length = unit(3, "pt"),
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
     strip.text = element_text(face = "bold"),
@@ -414,10 +416,10 @@ ggplot(top_abstracts_bing, aes(x = reorder(pmid, sentiment), y = sentiment, fill
   )
 
 # Save the plot
-ggsave("figures/abstract_figures/top_abstract_sentiments_bing.png")
+ggsave("figures/abstract_figures/top_abstract_sentiments_bing.png", width = 10, height = 8, dpi = 600, bg = "white")
 
 
-### Group posts by subreddit to get overall subreddit sentiment with AFINN------
+### Group abstracts by year to get overall abstract sentiment with AFINN------
 
 # count afinn sentiment for each comment
 abstracts_sentiment_afinn <- tokenized_abstracts_custom %>%
