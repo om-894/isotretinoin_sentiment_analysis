@@ -387,7 +387,7 @@ ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_posts_afinn_sen
        width = 13, height = 8, dpi = 600, bg = "white")
 
 
-### Group posts by subreddit to get overall subreddit sentiment with BING-------
+## Group posts by subreddit to get overall subreddit sentiment with BING-------
 
 # Assuming post_sentiment is already calculated
 # Select top 10 posts by sentiment for each subreddit
