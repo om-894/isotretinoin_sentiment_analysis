@@ -162,7 +162,7 @@ bigram_tf_idf %>%
   mutate(bigram = reorder(bigram, tf_idf)) %>%
   ggplot(aes(bigram, tf_idf, fill = period)) +
   geom_col(show.legend = FALSE) +
-  labs(x = NULL, y = "tf-idf") +
+  labs(x = "Bigram", y = "tf-idf") +
   facet_wrap(~period, ncol = 2, scales = "free") +
   coord_flip() +
   theme_minimal() +
@@ -178,7 +178,8 @@ bigram_tf_idf %>%
   )
 
 # save the figure
-ggsave("figures/abstract_figures/n_gram_and_term_frequency_figures/tf_idf_bigrams_abstracts.png")
+ggsave("figures/abstract_figures/n_gram_and_term_frequency_figures/tf_idf_bigrams_abstracts.png",
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 # Using Bigrams to Provide Context in Sentiment Analysis -----------------------
 
@@ -255,57 +256,3 @@ word_pairs <- map_df(chunks, function(chunk) {
 # 4. Examine words appearing with "acne"
 word_pairs %>%
   filter(item1 == "isotretinoin")
-
-# Examining Pairwise Correlation -----------------------------------------------
-
-# Not sure if i need to do this or not. 
-
-# To gain a more meaningful insight, we can look at the correlation between words,
-# which tells us how often two words appear together relative to how often they appear 
-# separately.
-
-# One approach to measure this relationship is using the phi coefficient.
-# The phi coefficient is a binary correlation measure that evaluates how likely it is
-# that both words (e.g., X and Y) appear together, or both are absent,
-# compared to situations where only one of them appears.
-
-# A high phi value indicates a strong positive association (both words tend to 
-# appear together), whereas a low or negative phi value suggests a weak or inverse 
-# association (one word appears without the other).
-
-# Calculate the phi coefficient between words
-word_cors <- accutane_abstract_words %>%
-  group_by(word) %>%
-  filter(n() >= 20) %>%
-  pairwise_cor(word, , sort = TRUE)
-
-# Find words most correlated with "results"
-word_cors %>%
-  filter(item1 == "results")
-
-# Visualize the words most correlated with selected words (Figure 4-8)
-word_cors %>%
-  filter(item1 %in% c("results", "acne")) %>%
-  group_by(item1) %>%
-  top_n(6) %>%
-  ungroup() %>%
-  mutate(item2 = reorder(item2, correlation)) %>%
-  ggplot(aes(item2, correlation)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~ item1, scales = "free") +
-  coord_flip()
-
-# Visualize the word correlation network (Figure 4-9)
-set.seed(2016)
-
-word_cors %>%
-  filter(correlation > .5) %>%
-  graph_from_data_frame() %>%
-  ggraph(layout = "fr") +
-  geom_edge_link(aes(edge_alpha = correlation), show.legend = FALSE) +
-  geom_node_point(color = "lightblue", size = 5) +
-  geom_node_text(aes(label = name), repel = TRUE) +
-  theme_void()
-
-# Pairs of words in "Pride and Prejudice"Accutane" subreddit that show at least 
-# a 0.5 correlation of appearing within the same subreddit post

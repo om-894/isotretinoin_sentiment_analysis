@@ -237,7 +237,7 @@ abstract_words_clean %>%
   mutate(word = reorder_within(word, tf_idf, period)) %>%
   ggplot(aes(word, tf_idf, fill = period)) +
   geom_col(show.legend = FALSE) +
-  labs(x = NULL, y = "tf-idf") +
+  labs(x = "Unigram", y = "tf-idf") +
   facet_wrap(~period, ncol = 2, scales = "free", labeller = label_both) +
   scale_x_reordered() +
   coord_flip() +
@@ -251,7 +251,8 @@ abstract_words_clean %>%
   )
 
 # Save the figure
-ggsave("figures/abstract_figures/n_gram_and_term_frequency_figures/tf_idf_unigrams_abstracts.png")
+ggsave("figures/abstract_figures/n_gram_and_term_frequency_figures/tf_idf_unigrams_abstracts.png",
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 # Figure should be final
 
