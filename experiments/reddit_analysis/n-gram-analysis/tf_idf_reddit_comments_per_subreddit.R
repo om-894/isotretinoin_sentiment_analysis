@@ -140,6 +140,8 @@ ggplot(freq_by_rank, aes(rank, term_frequency, color = subreddit)) +
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
@@ -148,7 +150,8 @@ ggplot(freq_by_rank, aes(rank, term_frequency, color = subreddit)) +
 # which states that term frequency is inversely proportional to rank.
 
 # Save the figure
-ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/zip_f_comments.png")
+ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/zip_f_comments.png",
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 # Calculating tf-idf -----------------------------------------------------------
 
@@ -235,13 +238,15 @@ comment_words_clean %>%
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
 # save the figure
 ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/tf_idf_unigrams_comments.png",
-       width = 10, height = 8, dpi = 600, units = "in")
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 
 

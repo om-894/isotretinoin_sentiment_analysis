@@ -174,5 +174,5 @@ bigram_tf_idf %>%
 
 # save the figure
 ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/tf_idf_bigrams_posts.png",
-       width = 10, height = 8, dpi = 600, units = "in")
+       width = 10, height = 8, dpi = 600, bg = "white")
 
