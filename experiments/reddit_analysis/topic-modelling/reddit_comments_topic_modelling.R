@@ -162,7 +162,7 @@ reddit_top_terms %>%
   facet_wrap(~ topic, scales = "free") +
   coord_flip() +
   scale_x_reordered() +
-  labs(x = "term",
+  labs(x = "Term",
     y = expression(beta)
   ) +
   theme_minimal() +
@@ -171,14 +171,19 @@ reddit_top_terms %>%
     axis.line = element_line(color = "black"), # Add black outline to axis
     axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.title.x = element_text(size = 18),  # Change x-axis label size
+    axis.title.y = element_text(size = 18),   # Change y-axis label size
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    axis.text.x = element_text(size = 18),  # Increased x-axis text size
+    axis.text.y = element_text(size = 18),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
 # save the figure
-ggsave("figures/reddit_figures/topic_modeling_figures/top_terms_per_topic_comments.png")
+ggsave("figures/reddit_figures/topic_modeling_figures/top_terms_per_topic_comments.png",
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 
 ### Analyze document-topic probabilities (Gamma) ---------------------------------
