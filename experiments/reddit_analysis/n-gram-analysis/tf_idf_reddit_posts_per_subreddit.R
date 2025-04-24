@@ -100,12 +100,17 @@ ggplot(freq_by_rank, aes(rank, term_frequency, color = subreddit)) +
     axis.line = element_line(color = "black"), # Add black outline to axis
     axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.title.x = element_text(size = 18),  # Change x-axis label size
+    axis.title.y = element_text(size = 18),   # Change y-axis label size
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
-    axis.text.x = element_text(size = 12),  # Increased x-axis text size
-    axis.text.y = element_text(size = 12),  # Increased y-axis text size
+    axis.text.x = element_text(size = 18),  # Increased x-axis text size
+    axis.text.y = element_text(size = 18),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
-    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
+    plot.margin = margin(10, 20, 10, 10), # Adjust margins (top, right, bottom, left)
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 16),
+    legend.key.size = unit(1.5, "cm")
   )
 
 # The fitted line has a slope close to -1, consistent with Zipf's Law,
@@ -113,7 +118,7 @@ ggplot(freq_by_rank, aes(rank, term_frequency, color = subreddit)) +
 
 # Save the figure
 ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/zip_f_posts.png",
-       width = 10, height = 8, dpi = 600, bg = "white")
+       width = 13, height = 9, dpi = 600, bg = "white")
 
 # Calculating tf-idf -----------------------------------------------------------
 
