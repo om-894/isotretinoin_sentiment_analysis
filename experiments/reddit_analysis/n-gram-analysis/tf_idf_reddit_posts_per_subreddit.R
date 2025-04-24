@@ -177,7 +177,7 @@ post_words_clean %>%
   mutate(word = reorder_within(word, tf_idf, subreddit)) %>%  # Reorder words within each book
   ggplot(aes(word, tf_idf, fill = subreddit)) +
   geom_col(show.legend = FALSE) +
-  labs(x = NULL, y = "tf-idf") +
+  labs(x = "Unigram", y = "tf-idf") +
   facet_wrap(~subreddit, ncol = 2, scales = "free") +
   scale_x_reordered() +
   coord_flip() +
@@ -194,7 +194,8 @@ post_words_clean %>%
   )
 
 # save the figure
-ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/tf_idf_unigrams_posts.png")
+ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/tf_idf_unigrams_posts.png",
+       width = 10, height = 8, dpi = 600, units = "in")
 
 
 
