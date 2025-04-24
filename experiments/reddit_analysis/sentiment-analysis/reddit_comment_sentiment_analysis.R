@@ -461,7 +461,8 @@ ggplot(top_posts_bing, aes(x = reorder(post_id, sentiment), y = sentiment, fill 
   )
 
 # Save the plot
-# ggsave("figures/reddit_figures/reddit_subreddits_top_sentiments_comments_bing.png")
+ggsave("figures/reddit_figures/reddit_subreddits_top_sentiments_comments_bing.png",
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 
 ### Group posts by subreddit to get overall subreddit sentiment with AFINN------
