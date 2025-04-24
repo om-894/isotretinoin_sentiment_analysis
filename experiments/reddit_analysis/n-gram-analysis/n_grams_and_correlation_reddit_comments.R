@@ -139,7 +139,7 @@ bigram_tf_idf %>%
   mutate(bigram = reorder(bigram, tf_idf)) %>%
   ggplot(aes(bigram, tf_idf, fill = subreddit)) +
   geom_col(show.legend = FALSE) +
-  labs(x = NULL, y = "tf-idf") +
+  labs(x = "Bigram", y = "tf-idf") +
   facet_wrap(~subreddit, ncol = 2, scales = "free") +
   coord_flip() +
   theme_minimal() +
@@ -157,7 +157,7 @@ bigram_tf_idf %>%
   )
 
 # save the figure
-ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/tf_idf_bigrams.png",
+ggsave("figures/reddit_figures/n_gram_and_term_frequency_figures/tf_idf_bigrams_comments.png",
        width = 10, height = 8, dpi = 600, bg = "white")
 
 # Using Bigrams to Provide Context in Sentiment Analysis -----------------------
