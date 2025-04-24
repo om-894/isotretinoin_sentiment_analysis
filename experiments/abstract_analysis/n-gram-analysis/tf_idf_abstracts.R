@@ -253,10 +253,15 @@ abstract_words_clean %>%
   theme(
     panel.grid = element_blank(), # Remove gridlines
     axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.title.x = element_text(size = 17),  # Change x-axis label size
+    axis.title.y = element_text(size = 17),   # Change y-axis label size
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
-    axis.text.x = element_text(size = 12),  # Increased x-axis text size
-    axis.text.y = element_text(size = 12),  # Increased y-axis text size
-    strip.text = element_text(face = "bold"),
+    axis.text.x = element_text(size = 13),  # Increased x-axis text size
+    axis.text.y = element_text(size = 16),  # Increased y-axis text size
+    strip.text = element_text(face = "bold", size = 14),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
