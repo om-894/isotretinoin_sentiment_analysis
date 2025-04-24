@@ -373,7 +373,7 @@ bing_word_counts_custom %>%
   geom_col(show.legend = FALSE) +         # Use columns to represent counts
   facet_wrap(~sentiment, scales = "free_y") +  # Facet by sentiment
   coord_flip() +                          # Flip coordinates for readability
-  labs(x = NULL,
+  labs(x = "Word",
        y = "contribution to sentiment") +
   theme_minimal() +
   theme(
