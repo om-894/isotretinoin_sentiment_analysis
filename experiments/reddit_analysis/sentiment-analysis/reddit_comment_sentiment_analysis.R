@@ -178,7 +178,8 @@ combined_emotions %>%
   )
 
 # Save combined plot
-ggsave("figures/reddit_figures/sentiment_analysis_figures/abstract_top_emotions_combined.png")
+ggsave("figures/reddit_figures/sentiment_analysis_figures/abstract_top_emotions_combined.png",
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 
 
