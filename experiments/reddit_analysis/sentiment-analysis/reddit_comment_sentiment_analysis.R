@@ -388,7 +388,8 @@ bing_word_counts_custom %>%
   )
 
 # Save the plot
-# ggsave("figures/reddit_figures/reddit_comments_bing_overall_sentiment.png")
+ggsave("figures/reddit_figures/reddit_comments_bing_overall_sentiment.png",
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 
 ### AFINN lexicon sentiment analysis--------------------------------------------
@@ -428,7 +429,8 @@ sentiment_afinn %>%
   )
 
 # Save the plot
-# ggsave("figures/reddit_figures/reddit_comments_afinn_sentiment_grades_with_swear.png")
+ggsave("figures/reddit_figures/reddit_comments_afinn_sentiment_grades_with_swear.png",
+       width = 15, height = 8, dpi = 600, bg = "white")
 
 
 ### Group posts by subreddit to get overall subreddit sentiment with BING-------
