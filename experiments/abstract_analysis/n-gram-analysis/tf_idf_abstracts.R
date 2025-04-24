@@ -141,12 +141,15 @@ ggplot(freq_by_rank, aes(rank, term_frequency, color = period)) +
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
 # Save the figure
-ggsave("figures/abstract_figures/n_gram_and_term_frequency_figures/zip_f_abstracts.png")
+ggsave("figures/abstract_figures/n_gram_and_term_frequency_figures/zip_f_abstracts.png",
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 # The line of best fit in your graph shows that the term frequencies generally follow 
 # Zipf's Law, with a consistent inverse relationship between rank and frequency across 
@@ -246,6 +249,8 @@ abstract_words_clean %>%
     panel.grid = element_blank(), # Remove gridlines
     axis.line = element_line(color = "black"), # Add black outline to axis
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )

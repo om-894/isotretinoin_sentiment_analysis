@@ -173,6 +173,8 @@ bigram_tf_idf %>%
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
+    axis.text.x = element_text(size = 12),  # Increased x-axis text size
+    axis.text.y = element_text(size = 12),  # Increased y-axis text size
     strip.text = element_text(face = "bold"),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
@@ -232,27 +234,4 @@ negated_words %>%
 # but sometimes we're interested in co-occurring words within a broader context
 # (e.g., within documents or chapters) even if they are not adjacent.
 
-# Counting and Correlating Among Sections --------------------------------------
 
-# 1. Prepare the data
-accutane_abstract_words <- abstracts_data %>%
-  filter(period == "2006 and later") %>%
-  unnest_tokens(word, abstract) %>%
-  filter(!word %in% stop_words$word)
-
-# 2. Split into chunks of 1000 words
-chunk_size <- 1000
-chunks <- split(accutane_abstract_words, 
-                ceiling(seq_len(nrow(accutane_abstract_words))/chunk_size))
-
-# 3. Process chunks and combine
-word_pairs <- map_df(chunks, function(chunk) {
-  chunk %>% pairwise_count(word, period, sort = TRUE)
-}) %>%
-  group_by(item1, item2) %>%
-  summarise(n = sum(n), .groups = 'drop') %>%
-  arrange(desc(n))
-
-# 4. Examine words appearing with "acne"
-word_pairs %>%
-  filter(item1 == "isotretinoin")
