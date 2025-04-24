@@ -499,7 +499,8 @@ ggplot(top_posts_afinn, aes(x = reorder(post_id, sentiment), y = sentiment, fill
   )
 
 # Save the plot
-# ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_subreddits_top_sentiments_comments_afinn.png")
+ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_subreddits_top_sentiments_comments_afinn.png",
+       width = 10, height = 8, dpi = 600, bg = "white")
 
 
 
