@@ -138,10 +138,14 @@ combined_emotions %>%
     axis.ticks = element_line(color = "black"),
     axis.ticks.length = unit(3, "pt"),
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
-    axis.text.x = element_text(size = 12),  # Increased x-axis text size
-    axis.text.y = element_text(size = 12),  # Increased y-axis text size
-    strip.text = element_text(face = "bold"),
-    plot.margin = margin(10, 20, 10, 10),
+    axis.text.x = element_text(size = 18),  # Increased x-axis text size
+    axis.text.y = element_text(size = 18),  # Increased y-axis text size
+    strip.text = element_text(size = 14, face = "bold"),  # Combined strip.text settings
+    axis.title.x = element_text(size = 18),  # Change x-axis label size
+    axis.title.y = element_text(size = 18),  # Change y-axis label size
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 16),
+    plot.margin = margin(10, 20, 10, 10), # Adjust margins (top, right, bottom, left)
     legend.position = "none"
   )
 
@@ -320,11 +324,15 @@ bing_word_counts_custom %>%
     axis.line = element_line(color = "black"), # Add black outline to axis
     axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
-    axis.text.x = element_text(size = 12),  # Increased x-axis text size
-    axis.text.y = element_text(size = 12),  # Increased y-axis text size
+    axis.text.x = element_text(size = 18),  # Increased x-axis text size
+    axis.text.y = element_text(size = 18),  # Increased y-axis text size
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
-    strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
-    strip.text = element_text(face = "bold"),
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1, size = 1), # Black outline for facet labels
+    strip.text = element_text(size = 14, face = "bold"),  # Combined strip.text settings
+    axis.title.x = element_text(size = 18),  # Change x-axis label size
+    axis.title.y = element_text(size = 18),  # Change y-axis label size
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 16),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
@@ -350,16 +358,20 @@ ggplot(top_abstracts_bing, aes(x = reorder(pmid, sentiment), y = sentiment, fill
   scale_fill_brewer(palette = "Set2") +  # Use a colorblind-friendly palette
   theme_minimal() +
   theme(
-    panel.grid = element_blank(),
-    axis.line = element_line(color = "black"),
-    axis.ticks.y = element_line(color = "black"),
-    axis.ticks.x = element_line(color = "black"),
-    axis.text.x = element_text(size = 12),  # Increased x-axis text size
-    axis.text.y = element_text(size = 12),  # Increased y-axis text size
-    axis.ticks.length = unit(3, "pt"),
-    strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
-    strip.text = element_text(face = "bold"),
-    plot.margin = margin(10, 20, 10, 10)
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.text.x = element_text(size = 18),  # Increased x-axis text size
+    axis.text.y = element_text(size = 16),  # Increased y-axis text size
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1, size = 1), # Black outline for facet labels
+    strip.text = element_text(size = 14, face = "bold"),  # Combined strip.text settings
+    axis.title.x = element_text(size = 18),  # Change x-axis label size
+    axis.title.y = element_text(size = 18),  # Change y-axis label size
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 16),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
 # Save the plot
@@ -389,16 +401,20 @@ ggplot(top_abstracts_afinn, aes(x = reorder(pmid, sentiment), y = sentiment, fil
   scale_fill_brewer(palette = "Set2") +  # Use a colorblind-friendly palette
   theme_minimal() +
   theme(
-    panel.grid = element_blank(),
-    axis.line = element_line(color = "black"),
-    axis.ticks.y = element_line(color = "black"),
-    axis.ticks.x = element_line(color = "black"),
-    axis.text.x = element_text(size = 12),  # Increased x-axis text size
-    axis.text.y = element_text(size = 12),  # Increased y-axis text size
-    axis.ticks.length = unit(3, "pt"),
-    strip.background = element_rect(color = "black", fill = NA, linewidth = 1),
-    strip.text = element_text(face = "bold"),
-    plot.margin = margin(10, 20, 10, 10)
+    panel.grid = element_blank(), # Remove gridlines
+    axis.line = element_line(color = "black"), # Add black outline to axis
+    axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
+    axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.text.x = element_text(size = 18),  # Increased x-axis text size
+    axis.text.y = element_text(size = 16),  # Increased y-axis text size
+    axis.ticks.length = unit(5, "pt"), # Adjust tick length
+    strip.background = element_rect(color = "black", fill = NA, linewidth = 1, size = 1), # Black outline for facet labels
+    strip.text = element_text(size = 14, face = "bold"),  # Combined strip.text settings
+    axis.title.x = element_text(size = 18),  # Change x-axis label size
+    axis.title.y = element_text(size = 18),  # Change y-axis label size
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 16),
+    plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
 # Save the plot
@@ -435,11 +451,13 @@ sentiment_afinn %>%
     axis.line = element_line(color = "black"), # Add black outline to axis
     axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
-    axis.text.x = element_text(size = 12),  # Increased x-axis text size
-    axis.text.y = element_text(size = 12),  # Increased y-axis text size
+    axis.text.x = element_text(size = 14),  # Increased x-axis text size
+    axis.text.y = element_text(size = 14),  # Increased y-axis text size
+    axis.title.x = element_text(size = 16),  # Change x-axis label size
+    axis.title.y = element_text(size = 16),  # Change y-axis label size
     axis.ticks.length = unit(3, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
-    strip.text = element_text(size = 9),
+    strip.text = element_text(size = 12, face = "bold"),  # Combined strip.text settings
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
