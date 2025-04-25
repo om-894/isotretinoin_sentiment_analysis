@@ -463,7 +463,7 @@ ggplot(top_posts_bing, aes(x = reorder(post_id, sentiment), y = sentiment, fill 
   geom_col(show.legend = FALSE) +
   coord_flip() +
   facet_wrap(~ subreddit, scales = "free_y", ncol = 2) +  # Adjust ncol for layout
-  labs(x = NULL, y = "Sentiment Score") +
+  labs(x = "Post ID", y = "Sentiment Score") +
   theme_minimal() +
   theme(
     panel.grid = element_blank(), # Remove gridlines
@@ -507,7 +507,7 @@ ggplot(top_posts_afinn, aes(x = reorder(post_id, sentiment), y = sentiment, fill
   geom_col(show.legend = FALSE) +
   coord_flip() +
   facet_wrap(~ subreddit, scales = "free_y", ncol = 2) +  # Adjust ncol for layout
-  labs(x = NULL, y = "Sentiment Score") +
+  labs(x = "Post ID", y = "Sentiment Score") +
   theme_minimal() +
   theme(
     panel.grid = element_blank(), # Remove gridlines
