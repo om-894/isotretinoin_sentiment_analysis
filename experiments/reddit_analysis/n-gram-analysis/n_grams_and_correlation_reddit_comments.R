@@ -148,11 +148,13 @@ bigram_tf_idf %>%
     axis.line = element_line(color = "black"), # Add black outline to axis
     axis.ticks.y = element_line(color = "black"), # Add tick marks to y-axis
     axis.ticks.x = element_line(color = "black"), # Add tick marks to y-axis
+    axis.title.x = element_text(size = 17),  # Change x-axis label size
+    axis.title.y = element_text(size = 17),   # Change y-axis label size
     axis.ticks.length = unit(5, "pt"), # Adjust tick length
     strip.background = element_rect(color = "black", fill = NA, linewidth = 1), # Black outline for facet labels
-    axis.text.x = element_text(size = 12),  # Increased x-axis text size
-    axis.text.y = element_text(size = 12),  # Increased y-axis text size
-    strip.text = element_text(face = "bold"),
+    axis.text.x = element_text(size = 13),  # Increased x-axis text size
+    axis.text.y = element_text(size = 16),  # Increased y-axis text size
+    strip.text = element_text(face = "bold", size = 14),
     plot.margin = margin(10, 20, 10, 10) # Adjust margins (top, right, bottom, left)
   )
 
@@ -204,85 +206,6 @@ negated_words %>%
 
 # Figure 4-3. The most common positive or negative words to follow negations such 
 # as “never,” “no,” “not,” and “without”
-
-# Counting and Correlating Pairs of Words with the widyr Package ---------------
-
-# Tokenizing by n-grams allows exploration of adjacent word pairs,
-# but sometimes we're interested in co-occurring words within a broader context
-# (e.g., within documents or chapters) even if they are not adjacent.
-
-# Counting and Correlating Among Sections --------------------------------------
-
-# Prepare the data
-accutane_post_words <- df_combined %>%
-  filter(subreddit == "Accutane") %>%
-  # Number each post from 1 onwards
-  mutate(post_num = row_number()) %>%
-  unnest_tokens(word, comments_combined) %>%
-  filter(!word %in% stop_words$word)
-
-# Count word pairs co-occurring within the same section
-word_pairs <- accutane_post_words %>%
-  pairwise_count(word, post_num, sort = TRUE)
-
-# Examine the words most often appearing with "progress"
-word_pairs %>%
-  filter(item1 == "progress")
-
-# Examining Pairwise Correlation -----------------------------------------------
-
-# To gain a more meaningful insight, we can look at the correlation between words,
-# which tells us how often two words appear together relative to how often they appear 
-# separately.
-
-# One approach to measure this relationship is using the phi coefficient.
-# The phi coefficient is a binary correlation measure that evaluates how likely it is
-# that both words (e.g., X and Y) appear together, or both are absent,
-# compared to situations where only one of them appears.
-
-# A high phi value indicates a strong positive association (both words tend to 
-# appear together), whereas a low or negative phi value suggests a weak or inverse 
-# association (one word appears without the other).
-
-# Calculate the phi coefficient between words
-word_cors <- accutane_post_words %>%
-  group_by(word) %>%
-  filter(n() >= 20) %>%
-  pairwise_cor(word, post_num, sort = TRUE)
-
-# Find words most correlated with "results"
-word_cors %>%
-  filter(item1 == "results")
-
-# Visualize the words most correlated with selected words (Figure 4-8)
-word_cors %>%
-  filter(item1 %in% c("results", "acne")) %>%
-  group_by(item1) %>%
-  top_n(6) %>%
-  ungroup() %>%
-  mutate(item2 = reorder(item2, correlation)) %>%
-  ggplot(aes(item2, correlation)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~ item1, scales = "free") +
-  coord_flip()
-
-# Visualize the word correlation network (Figure 4-9)
-set.seed(2016)
-
-word_cors %>%
-  filter(correlation > .5) %>%
-  graph_from_data_frame() %>%
-  ggraph(layout = "fr") +
-  geom_edge_link(aes(edge_alpha = correlation), show.legend = FALSE) +
-  geom_node_point(color = "lightblue", size = 5) +
-  geom_node_text(aes(label = name), repel = TRUE) +
-  theme_void()
-
-# Pairs of words in Accutane" subreddit that show at least 
-# a 0.5 correlation of appearing within the same subreddit post
-
-
-
 
 
 
