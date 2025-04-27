@@ -352,7 +352,7 @@ ggsave("figures/reddit_figures/sentiment_analysis_figures/reddit_posts_bing_over
        width = 10, height = 8, dpi = 600, bg = "white")
 
 
-### AFINN lexicon sentiment analysis--------------------------------------------
+## AFINN lexicon sentiment analysis--------------------------------------------
 
 # Calculate word frequency and sentiment value
 sentiment_afinn <- tokenized_posts_custom %>%
